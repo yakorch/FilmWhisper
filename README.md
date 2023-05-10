@@ -1,2 +1,2 @@
 # FilmWhisper
-you can guees what it means
+you can guess what it means
