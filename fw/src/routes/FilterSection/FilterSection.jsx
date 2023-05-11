@@ -1,7 +1,10 @@
+import {MultipleOptionsList} from "./MultipleOptionsList";
+
 export function FilterSection() {
     return (
         <>
-            <h2>5 stars or 6 huh</h2>
+            <h2>What genres do you prefer?</h2>
+            <MultipleOptionsList options={["Comedy", "Horror", "Action", "Thriller", "Drama"]} />
         </>
     )
 }
