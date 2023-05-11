@@ -1,8 +1,8 @@
 import {useState} from "react";
 import "./genres.css";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faCheck, faPlus} from '@fortawesome/free-solid-svg-icons'
 
 export function BinaryOptionElement(props) {
     const [isSelected, setIsSelected] = useState(false);
@@ -15,7 +15,7 @@ export function BinaryOptionElement(props) {
     return (
         <>
             <button className={`binary-button ${buttonClassName}`} onClick={handleClick}>
-                {isSelected ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faPlus} />}
+                <FontAwesomeIcon icon={isSelected ? faCheck : faPlus}/>
                 <span>{props.text}</span>
             </button>
         </>

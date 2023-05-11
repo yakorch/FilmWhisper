@@ -1,10 +1,13 @@
 import {NavigationBar} from "./NavigationBar/NavigationBar";
+import React from "react";
+import "./header.css";
 
 export function Header() {
     return (
-        <>
-            <h1>Film Whisper</h1>
+        <header>
+            <h1 className="header">
+                Film Whisper</h1>
             <NavigationBar/>
-        </>
+        </header>
     )
 }
