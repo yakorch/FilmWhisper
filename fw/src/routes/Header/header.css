@@ -1,9 +1,13 @@
-.header {
-    margin: 0;
-    color: #6cd793;
-    font-size: 72px;
+.website_logo {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1.5% 0 1.5%;
+    border-bottom: 2px solid #6cd793;
+    color: #6cd793;
+    /*background: linear-gradient(to bottom, #499966, transparent);*/
+}
 
+header {
+    margin: 0 6vh;
 }
