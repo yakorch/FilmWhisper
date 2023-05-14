@@ -1,4 +1,4 @@
-const API_KEY = "API_KEY";
+const API_KEY = "28bfad0281f3e0097699529a7f57474a";
 
 const genresMap = {
     "Action": 28,
@@ -38,6 +38,9 @@ function getTopRatedMoviesByGenres(apiKey, numMovies, genres) {
         .then(data => data.results.slice(0, numMovies));
 }
 
+function getTopRatedMoviesByGenresHardcoded(genres){
+    return getTopRatedMoviesByGenres(API_KEY, 10, genres)
+}
 
 
-export {getTopRatedMovies, getTopRatedMoviesByGenres, API_KEY, genresMap};
+export {getTopRatedMovies, getTopRatedMoviesByGenres, getTopRatedMoviesByGenresHardcoded, API_KEY, genresMap};
