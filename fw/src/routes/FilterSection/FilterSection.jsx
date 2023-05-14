@@ -78,12 +78,10 @@ export function FilterSection() {
             "minMovieRating": movieRating,
             "actors": actors
         }
-        console.log(filters);
 
         getTopRatedMoviesByGenresHardcoded(filters.genres).then((movies) => {
             setRecommendedMovies(movies)
         });
-        console.log(recommendedMovies);
 
     }
 

@@ -15,8 +15,6 @@ for (const [key, value] of Object.entries(genresMap)) {
 }
 
 
-console.log(movieIDToGenreName);
-
 const MovieCard = ({ movie }) => {
 	const imageURL = "https://image.tmdb.org/t/p/w500";
 	const {
