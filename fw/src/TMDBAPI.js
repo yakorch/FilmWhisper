@@ -1,4 +1,4 @@
-const API_KEY = "28bfad0281f3e0097699529a7f57474a";
+const API_KEY = "API_KEY";
 
 const genresMap = {
     "Action": 28,
@@ -42,5 +42,23 @@ function getTopRatedMoviesByGenresHardcoded(genres){
     return getTopRatedMoviesByGenres(API_KEY, 10, genres)
 }
 
+function getTopRatedMoviesByGenresUnion(apiKey, numMovies, genres) {
+    const promises = genres.map(genreName => {
+        const genreId = genresMap[genreName];
+        return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreId}`)
+            .then(response => response.json())
+            .then(data => data.results);
+    });
 
-export {getTopRatedMovies, getTopRatedMoviesByGenres, getTopRatedMoviesByGenresHardcoded, API_KEY, genresMap};
+    return Promise.all(promises)
+        .then(results => results.flat())
+        .then(movies => {
+            // Sort the movies by vote average in descending order
+            const sortedMovies = movies.sort((a, b) => b.vote_average - a.vote_average);
+            return sortedMovies.slice(0, numMovies);
+        });
+}
+
+
+
+export {getTopRatedMovies, getTopRatedMoviesByGenres, getTopRatedMoviesByGenresHardcoded, getTopRatedMoviesByGenresUnion, API_KEY, genresMap};
