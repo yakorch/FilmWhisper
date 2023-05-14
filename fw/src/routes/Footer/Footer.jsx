@@ -3,10 +3,16 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 
 const styles = {
     footer: {
+        position: "relative",
         top: "auto",
         bottom: 0,
+        margin: "auto",
         marginTop: "auto",
         backgroundColor: "primary",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
     },
     grow: {
         flexGrow: 1,
