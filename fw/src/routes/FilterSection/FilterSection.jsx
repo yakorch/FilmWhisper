@@ -1,7 +1,7 @@
 import {MultipleOptionsList} from "./MultipleOptionsList";
 import {useState} from "react";
 import Button from '@mui/material/Button';
-import {CardContent, LinearProgress, Paper, Rating, Typography} from "@mui/material";
+import {CardContent, Paper, Rating, Typography} from "@mui/material";
 import {genresMap} from "../../TMDBAPI";
 
 
@@ -41,22 +41,21 @@ export function FilterSection() {
 
             </Paper>
 
-                <Typography component="legend">Minimum Movie rating</Typography>
-                <Rating
-                    name="customized-10"
-                    defaultValue={7}
-                    max={10}
-                    value={movieRating}
-                    onChange={(event, newValue) => {
-                        setMovieRating(newValue);
-                    }}
-                />
+            <Typography component="legend">Minimum Movie rating</Typography>
+            <Rating
+                name="customized-10"
+                defaultValue={7}
+                max={10}
+                value={movieRating}
+                onChange={(event, newValue) => {
+                    setMovieRating(newValue);
+                }}
+            />
 
 
-                <Button variant="contained" color="primary" onClick={createQuery}>Find movies</Button>
+            <Button variant="contained" color="primary" onClick={createQuery}>Find movies</Button>
 
-                {/*</form>*/}
-
+            {/*</form>*/}
 
 
         </CardContent>
