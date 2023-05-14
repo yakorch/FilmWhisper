@@ -8,16 +8,15 @@ export function BinaryOptionElement(props) {
     const [isSelected, setIsSelected] = useState(false);
     const handleClick = () => {
         setIsSelected(!isSelected);
+        props.changeOptionState(props.index);
     };
 
     const buttonClassName = isSelected ? "selected" : "not-selected";
 
     return (
-        <>
             <button className={`binary-button ${buttonClassName}`} onClick={handleClick}>
                 <FontAwesomeIcon icon={isSelected ? faCheck : faPlus}/>
                 <span>{props.text}</span>
             </button>
-        </>
     )
 }

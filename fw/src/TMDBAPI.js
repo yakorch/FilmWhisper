@@ -40,4 +40,4 @@ function getTopRatedMoviesByGenres(apiKey, numMovies, genres) {
 
 
 
-export {getTopRatedMovies, getTopRatedMoviesByGenres, API_KEY};
+export {getTopRatedMovies, getTopRatedMoviesByGenres, API_KEY, genresMap};

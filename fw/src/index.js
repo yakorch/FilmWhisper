@@ -2,12 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./index.css";
-// import App from './App';
 import {Root} from "./routes/Root";
 import ErrorPage from "./errorPage";
 import {UserAccount} from "./routes/UserAccount/UserAccount";
 import {FilterSection} from "./routes/FilterSection/FilterSection";
 import {FAQSection} from "./routes/FAQSection/FAQSection";
+import {ThemeProvider} from "@mui/material";
+import theme from "./theme.js";
 
 
 const router = createBrowserRouter([{
@@ -22,5 +23,9 @@ const router = createBrowserRouter([{
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<React.StrictMode>
-    <RouterProvider router={router}/>
+    <ThemeProvider theme={theme}>
+
+        <RouterProvider router={router}/>
+
+    </ThemeProvider>
 </React.StrictMode>);
