@@ -4,6 +4,7 @@ import {Autocomplete, Box, Container, Paper, Rating, TextField, Typography} from
 import {MultipleOptionsList} from "./MultipleOptionsList";
 import {genresMap, getTopRatedMoviesByGenresHardcoded} from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
+import MovieCard from "./MovieBlock";
 
 const getAllPossibleGenres = () => {
     return Object.keys(genresMap);
@@ -20,6 +21,33 @@ const basicActors =
         "Ryan Gosling"
     ];
 
+
+function RecommendedMovies({movies}) {
+    return (
+        <Paper elevation={20} sx={{m: '5vh', p: '2vh'}}>
+            <Typography variant="h2" sx={{my: '2vh', pb: '2vh'}}>
+                Our recommendations
+            </Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'flex-start',
+                    '@media (max-width: 600px)': {
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    },
+                }}
+            >
+                {movies.map((movie, index) => (
+                    <MovieCard key={index} movie={movie}/>
+                ))}
+            </Box>
+        </Paper>
+    );
+}
 
 export function FilterSection() {
     const theme = useTheme();
@@ -52,7 +80,11 @@ export function FilterSection() {
         }
         console.log(filters);
 
-        const promisedMovies = getTopRatedMoviesByGenresHardcoded(filters.genres);
+        getTopRatedMoviesByGenresHardcoded(filters.genres).then((movies) => {
+            setRecommendedMovies(movies)
+        });
+        console.log(recommendedMovies);
+
     }
 
     return (<>
@@ -108,19 +140,7 @@ export function FilterSection() {
                     sx={{fontSize: '1.2rem', padding: '1rem 1rem'}}>Find movies</Button>
 
 
-            <Paper elevation={20} sx={{m: "5vh", p: "2vh"}}>
-                <Typography variant="h2" sx={{my: "2vh", pb: "2vh"}}>
-                    Our recommendations
-                </Typography>
-                <Box>
-                    {
-                        recommendedMovies.map((movie, index) => {
-                            <span>{movie}</span>
-                        })
-                    }
-                </Box>
-            </Paper>
-
+            <RecommendedMovies movies={recommendedMovies}/>
 
         </Container>
 
