@@ -28,7 +28,7 @@ export function Footer() {
             <AppBar position="static" color="primary" style={styles.footer}>
                 <Toolbar>
                     <IconButton
-                        href="https://github.com/your-github-repo"
+                        href="https://github.com/yakorch/FilmWhisper.git"
                         target="_blank"
                         rel="noopener noreferrer"
                         edge="start"
