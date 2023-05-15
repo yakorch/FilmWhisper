@@ -9,6 +9,7 @@ import {ThemeProvider} from "@mui/material";
 import theme from "./theme.js";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./index.css";
+import SignIn from "./routes/Signing/SignIn";
 
 const router = createBrowserRouter([{
     path: "/", element: <Root/>, errorElement: <ErrorPage/>, children: [{
@@ -17,7 +18,9 @@ const router = createBrowserRouter([{
         path: "faq", element: <FAQSection/>
     }, {
         path: "user-account", element: <UserAccount/>
-    },]
+    }, {
+        path: "sign-in", element: <SignIn/>
+    }]
 }]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

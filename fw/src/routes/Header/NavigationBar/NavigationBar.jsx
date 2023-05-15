@@ -10,7 +10,8 @@ export const NavigationBar = () => {
     const appPages = [
         {text: "Whisper!", url: "/"},
         {text: "FAQ", url: "faq"},
-        {text: "User Account", url: "user-account"}
+        {text: "User Account", url: "user-account"},
+        {text: "Sign In", url:"sign-in"}
     ]
 
     const handleTabChange = (event, newValue) => {
