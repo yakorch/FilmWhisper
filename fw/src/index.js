@@ -10,6 +10,7 @@ import theme from "./theme.js";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./index.css";
 import SignIn from "./routes/Signing/SignIn";
+import SignUp from "./routes/Signing/SignUp";
 
 const router = createBrowserRouter([{
     path: "/", element: <Root/>, errorElement: <ErrorPage/>, children: [{
@@ -20,6 +21,8 @@ const router = createBrowserRouter([{
         path: "user-account", element: <UserAccount/>
     }, {
         path: "sign-in", element: <SignIn/>
+    }, {
+        path: "sign-up", element: <SignUp/>
     }]
 }]);
 

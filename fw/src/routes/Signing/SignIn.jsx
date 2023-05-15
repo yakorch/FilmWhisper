@@ -16,13 +16,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#3f51b5', // Replace with your desired primary color
-        },
-    },
-});
+const theme = createTheme();
 
 export default function SignIn() {
     const navigate = useNavigate();
