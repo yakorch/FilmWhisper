@@ -18,7 +18,7 @@ export function FAQSection() {
             {
                 questionsAndAnswers.map(({question, answer}, index) =>
 
-                    <MDBAccordionItem collapseId={index + 1} headerTitle={question}>
+                    <MDBAccordionItem collapseId={index + 1} key={index} headerTitle={question}>
                         <strong>{answer}</strong>
                     </MDBAccordionItem>)
             }
