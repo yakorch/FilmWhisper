@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import {Root} from "./routes/Root";
 import ErrorPage from "./errorPage";
 import {UserAccount} from "./routes/UserAccount/UserAccount";
@@ -9,6 +8,7 @@ import {FAQSection} from "./routes/FAQSection/FAQSection";
 import {ThemeProvider} from "@mui/material";
 import theme from "./theme.js";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import "./index.css";
 
 const router = createBrowserRouter([{
     path: "/", element: <Root/>, errorElement: <ErrorPage/>, children: [{
