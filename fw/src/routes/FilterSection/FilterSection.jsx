@@ -82,8 +82,6 @@ export function FilterSection() {
         getTopRatedMoviesByGenresHardcoded(filters.genres).then((movies) => {
             setRecommendedMovies(movies.filter((movie) => (movie.vote_average || 10) >= filters.minMovieRating));
         });
-
-
     }
 
     return (<>
