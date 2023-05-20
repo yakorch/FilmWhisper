@@ -2,7 +2,12 @@ import React, {useState} from "react";
 import Button from "@mui/material/Button";
 import {Autocomplete, Container, Paper, Rating, Switch, TextField, Typography} from "@mui/material";
 import {MultipleOptionsList} from "./ChipsList/MultipleOptionsList";
-import {genresMap, getTopRatedMoviesByGenresIntersection, getTopRatedMoviesByGenresUnion} from "../../TMDBAPI";
+import {
+    genresMap,
+    getMoviesByActorNames,
+    getTopRatedMoviesByGenresIntersection,
+    getTopRatedMoviesByGenresUnion
+} from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
 import {RecommendedMovies} from "./RecommendedMovies/RecommendedMovies";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -19,6 +24,7 @@ export function FilterSection() {
 
     const movieGenres = getAllPossibleGenres();
     const [selectedGenres, setSelectedGenres] = useState(movieGenres.map(() => false));
+    const MOVIES_PER_RESPONSE = 10;
     const toggleOptionState = (index, optionsSelected, optionsSetter) => {
         let modifiedStates = [...optionsSelected];
         modifiedStates[index] = !modifiedStates[index];
@@ -45,15 +51,29 @@ export function FilterSection() {
     const readFilters = () => {
         return {
             genres: movieGenres.filter((genre, index) => selectedGenres[index] === true),
-            executionQueryFunction: toIntersectGenres ? getTopRatedMoviesByGenresIntersection : getTopRatedMoviesByGenresUnion,
             minMovieRating: movieRating,
             actors: actors
+        };
+    }
+    const prepareQueryFunction = (filters) => {
+        if (filters.actors.length > 0){
+            return () => {
+                return getMoviesByActorNames(filters.actors, MOVIES_PER_RESPONSE)
+            };
+        }
+        else {
+            const APIFunc = toIntersectGenres ? getTopRatedMoviesByGenresIntersection : getTopRatedMoviesByGenresUnion;
+            return () => {
+                return APIFunc(MOVIES_PER_RESPONSE, filters.genres)
+            };
         }
     }
 
     const executeQuery = () => {
         const filters = readFilters();
-        filters.executionQueryFunction(10, filters.genres).then((movies) => {
+        const executionQueryFunction = prepareQueryFunction(filters);
+
+        executionQueryFunction().then((movies) => {
             setRecommendedMovies(movies.filter((movie) => (movie.vote_average >= filters.minMovieRating)));
         });
     }
