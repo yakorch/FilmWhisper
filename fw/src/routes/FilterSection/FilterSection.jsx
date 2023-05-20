@@ -1,59 +1,38 @@
 import React, {useState} from "react";
 import Button from "@mui/material/Button";
-import {Autocomplete, Box, Container, Paper, Rating, TextField, Typography} from "@mui/material";
-import {MultipleOptionsList} from "./MultipleOptionsList";
-import {genresMap, getTopRatedMoviesByGenresHardcoded} from "../../TMDBAPI";
+import {Autocomplete, Container, Paper, Rating, Switch, TextField, Typography} from "@mui/material";
+import {MultipleOptionsList} from "./ChipsList/MultipleOptionsList";
+import {genresMap, getTopRatedMoviesByGenresIntersection, getTopRatedMoviesByGenresUnion} from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
-import MovieCard from "./MovieBlock";
+import {RecommendedMovies} from "./RecommendedMovies/RecommendedMovies";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const getAllPossibleGenres = () => {
     return Object.keys(genresMap);
 }
 
-const basicActors =
-    [
-        "Robert Downey Jr.",
-        "Chris Hemsworth",
-        "Scarlett Johansson",
-        "Chris Evans",
-        "Tom Hiddleston",
-        "Ryan Reynolds",
-        "Ryan Gosling"
-    ];
+const basicActors = ["Robert Downey Jr.", "Chris Hemsworth", "Scarlett Johansson", "Chris Evans", "Tom Hiddleston", "Ryan Reynolds", "Ryan Gosling"];
 
-
-function RecommendedMovies({movies}) {
-    return (
-        <Paper elevation={20} sx={{m: '5vh', p: '2vh'}}>
-            <Typography variant="h2" sx={{my: '2vh', pb: '2vh'}}>
-                Our recommendations
-            </Typography>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-evenly',
-                    alignItems: 'flex-start',
-                    '@media (max-width: 600px)': {
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    },
-                }}
-            >
-                {movies.map((movie, index) => (
-                    <MovieCard key={index} movie={movie}/>
-                ))}
-            </Box>
-        </Paper>
-    );
-}
 
 export function FilterSection() {
     const theme = useTheme();
 
     const movieGenres = getAllPossibleGenres();
     const [selectedGenres, setSelectedGenres] = useState(movieGenres.map(() => false));
+    const toggleOptionState = (index, optionsSelected, optionsSetter) => {
+        let modifiedStates = [...optionsSelected];
+        modifiedStates[index] = !modifiedStates[index];
+        optionsSetter(modifiedStates);
+    }
+    const toggleGenreState = (index) => {
+        toggleOptionState(index, selectedGenres, setSelectedGenres);
+    }
+
+    const [toIntersectGenres, setToIntersectGenres] = useState(true);
+
+    const toggleGenresAction = () => {
+        setToIntersectGenres(!toIntersectGenres);
+    };
 
 
     const [movieRating, setMovieRating] = useState(7);
@@ -62,27 +41,23 @@ export function FilterSection() {
 
     const [recommendedMovies, setRecommendedMovies] = useState([]);
 
-    const toggleOptionState = (index, optionsSelected, optionsSetter) => {
-        let modifiedStates = [...optionsSelected];
-        modifiedStates[index] = !modifiedStates[index];
-        optionsSetter(modifiedStates);
-    }
 
-    const toggleGenreState = (index) => {
-        toggleOptionState(index, selectedGenres, setSelectedGenres);
-    }
-
-    const createQuery = () => {
-        const filters = {
-            "genres": movieGenres.filter((genre, index) => selectedGenres[index] === true),
-            "minMovieRating": movieRating,
-            "actors": actors
+    const readFilters = () => {
+        return {
+            genres: movieGenres.filter((genre, index) => selectedGenres[index] === true),
+            executionQueryFunction: toIntersectGenres ? getTopRatedMoviesByGenresIntersection : getTopRatedMoviesByGenresUnion,
+            minMovieRating: movieRating,
+            actors: actors
         }
+    }
 
-        getTopRatedMoviesByGenresHardcoded(filters.genres).then((movies) => {
-            setRecommendedMovies(movies.filter((movie) => (movie.vote_average || 10) >= filters.minMovieRating));
+    const executeQuery = () => {
+        const filters = readFilters();
+        filters.executionQueryFunction(10, filters.genres).then((movies) => {
+            setRecommendedMovies(movies.filter((movie) => (movie.vote_average >= filters.minMovieRating)));
         });
     }
+
 
     return (<>
         <Container>
@@ -91,6 +66,9 @@ export function FilterSection() {
                 <Typography variant="h3" sx={{py: "2vh"}}>What genres do you prefer?</Typography>
                 <MultipleOptionsList changeOptionState={toggleGenreState} options={movieGenres}/>
             </Paper>
+
+            <FormControlLabel control={<Switch checked={toIntersectGenres} onChange={toggleGenresAction}/>}
+                              label={toIntersectGenres ? "Intersection" : "U for Union!"}/>
 
             <Paper elevation={15} sx={{m: "3vh", p: "1vh"}}>
                 <Typography variant="h3">Minimum Movie rating</Typography>
@@ -123,17 +101,15 @@ export function FilterSection() {
                     onChange={(event, newActors) => {
                         setActors(newActors);
                     }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Actors"
-                            placeholder="Type or select actors"
-                        />
-                    )}
+                    renderInput={(params) => (<TextField
+                        {...params}
+                        label="Actors"
+                        placeholder="Type or select actors"
+                    />)}
                 />
             </Paper>
 
-            <Button variant="contained" color="primary" onClick={createQuery}
+            <Button variant="contained" color="primary" onClick={executeQuery}
                     sx={{fontSize: '1.2rem', padding: '1rem 1rem'}}>Find movies</Button>
 
 

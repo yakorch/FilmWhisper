@@ -1,6 +1,6 @@
 import React from "react";
 import {Card, CardContent, CardMedia, Chip, Typography,} from "@mui/material";
-import {genresMap} from "../../TMDBAPI";
+import {genresMap} from "../../../TMDBAPI";
 
 const movieIDToGenreName = {};
 // reverse the genresMap
