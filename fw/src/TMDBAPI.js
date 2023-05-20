@@ -38,7 +38,7 @@ function getTopRatedMoviesByGenres(apiKey, numMovies, genres) {
         .then(data => data.results.slice(0, numMovies));
 }
 
-function getTopRatedMoviesByGenresHardcoded(genres){
+function getTopRatedMoviesByGenresHardcoded(genres) {
     return getTopRatedMoviesByGenresUnion(API_KEY, 10, genres)
 }
 
@@ -59,6 +59,47 @@ function getTopRatedMoviesByGenresUnion(apiKey, numMovies, genres) {
         });
 }
 
+function getActorIdByName(apiKey, actorName) {
+    return fetch(
+        `https://api.themoviedb.org/3/search/person?api_key=${apiKey}&query=${encodeURIComponent(
+            actorName
+        )}`
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.results.length > 0) {
+                return data.results[0].id;
+            } else {
+                throw new Error(`Actor with name ${actorName} not found.`);
+            }
+        });
+}
+
+function getMoviesByActorId(apiKey, actorId, numMovies) {
+    return fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&with_cast=${actorId}`
+    )
+        .then((response) => response.json())
+        .then((data) => data.results.slice(0, numMovies));
+}
+
+function getMoviesByActorNames(apiKey, actorNames, numMovies) {
+    const promises = actorNames.map((actorName) =>
+        getActorIdByName(apiKey, actorName).then((actorId) =>
+            getMoviesByActorId(apiKey, actorId, numMovies)
+        )
+    );
+
+    return Promise.all(promises).then((results) => results.flat());
+}
 
 
-export {getTopRatedMovies, getTopRatedMoviesByGenres, getTopRatedMoviesByGenresHardcoded, getTopRatedMoviesByGenresUnion, API_KEY, genresMap};
+export {
+    getTopRatedMovies,
+    getTopRatedMoviesByGenres,
+    getTopRatedMoviesByGenresHardcoded,
+    getTopRatedMoviesByGenresUnion,
+    getMoviesByActorNames,
+    API_KEY,
+    genresMap
+};
