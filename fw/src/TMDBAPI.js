@@ -22,18 +22,18 @@ const genresMap = {
     "Western": 37
 };
 
-function getTopRatedMovies(numMovies) {
-    return fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`)
+function getTopRatedMovies(numMovies, signal) {
+    return fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`, signal || {})
         .then(response => response.json())
         .then(data => data.results.slice(0, numMovies));
 }
 
-function getTopRatedMoviesByGenresIntersection(numMovies, genres) {
+function getTopRatedMoviesByGenresIntersection(numMovies, genres, signal) {
     // First, get the genre ids by name
     const genreIds = genres.map(genreName => genresMap[genreName]).filter(id => id !== undefined);
 
     // Then, get the top-rated movies for those genres
-    return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreIds.join(',')}`)
+    return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreIds.join(',')}`, signal || {})
         .then(response => response.json())
         .then(data => data.results.slice(0, numMovies));
 }
