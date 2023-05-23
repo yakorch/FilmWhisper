@@ -82,8 +82,8 @@ export function FilterSection() {
             .numberTopRatedMovies(MOVIES_PER_PAGE)
             .useJoiner(toIntersectGenres ? ',' : '|')
             .withActors(selectedActors)
-            .byGenres(selectedGenres)
-        ;
+            .byGenres(selectedGenres);
+
         return () => queryBuilder.fetch(signal);
     }
 
