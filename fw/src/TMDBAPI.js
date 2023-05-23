@@ -21,10 +21,11 @@ const genresMap = {
     "War": 10752,
     "Western": 37
 };
+
 function getTopRatedMovies(numMovies, signal) {
     const url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
 
-    return fetch(url, { signal })
+    return fetch(url, {signal})
         .then(response => response.json())
         .then(data => {
             if (data.results && data.results.length > 0) {
@@ -35,60 +36,23 @@ function getTopRatedMovies(numMovies, signal) {
         });
 }
 
-function getTopRatedMoviesByGenres(numMovies, genres) {
-    const genreIds = genres.map(genreName => genresMap[genreName]).filter(id => id !== undefined);
-    return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreIds.join(',')}`)
-        .then(response => response.json())
-        .then(data => data.results.slice(0, numMovies));
-}
-
-function getActorIdByName(apiKey, actorName) {
-    return fetch(
-        `https://api.themoviedb.org/3/search/person?api_key=${apiKey}&query=${encodeURIComponent(
-            actorName
-        )}`
-    )
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.results.length > 0) {
-                return data.results[0];
-            } else {
-                throw new Error(`Actor with name ${actorName} not found.`);
-            }
-        });
-}
-
-
-function getMoviesByActorId(apiKey, actorId, numMovies) {
-    return fetch(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&with_cast=${actorId}`
-    )
-        .then((response) => response.json())
-        .then((data) => data.results.slice(0, numMovies));
-}
-
-function getMoviesByActorNames(apiKey, actorNames, numMovies) {
-    const promises = actorNames.map((actorName) =>
-        getActorIdByName(apiKey, actorName).then((actorId) =>
-            getMoviesByActorId(apiKey, actorId, numMovies)
-        )
-    );
-
-    return Promise.all(promises).then((results) => results.flat());
-}
-
-
 class MovieQueryBuilder {
     constructor() {
         this.apiKey = API_KEY;
         this.genres = [];
         this.actors = [];
-        this.numMovies = 10;
+        this.numMovies = 100;
+        this.minRating = 7;
         this.joiner = ",";
     }
 
-    topRatedMovies(numMovies) {
+    numberTopRatedMovies(numMovies) {
         this.numMovies = numMovies;
+        return this;
+    }
+
+    minMovieRating(minRating) {
+        this.minRating = minRating;
         return this;
     }
 
@@ -107,8 +71,8 @@ class MovieQueryBuilder {
         return this;
     }
 
-    fetch() {
-        const { apiKey, genres, actors, numMovies, joiner } = this;
+    fetch(signal = {}) {
+        const {apiKey, genres, actors, numMovies, minRating, joiner} = this;
 
         // Create promise to fetch actor IDs
         const actorPromises = actors.map(name =>
@@ -133,8 +97,10 @@ class MovieQueryBuilder {
                     url += `&with_cast=${actorIds.join(joiner)}`;
                 }
 
+                url += `&vote_average.gte=${minRating}`;
+
                 // Fetch the movies
-                return fetch(url);
+                return fetch(url, signal);
             })
             .then(response => response.json())
             .then(data => data.results.slice(0, numMovies));
@@ -143,11 +109,6 @@ class MovieQueryBuilder {
 
 export {
     getTopRatedMovies,
-    getTopRatedMoviesByGenres,
-    getMoviesByActorNames,
-    getActorIdByName,
-    getMoviesByActorId,
     MovieQueryBuilder,
-    API_KEY,
     genresMap
 };

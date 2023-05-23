@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import {Autocomplete, Container, Rating, Switch, TextField, Typography} from "@mui/material";
-import {
-    genresMap,
-    getTopRatedMovies,
-    MovieQueryBuilder
-} from "../../TMDBAPI";
+import {genresMap, getTopRatedMovies, MovieQueryBuilder} from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
 import {RecommendedMovies} from "./RecommendedMovies/RecommendedMovies";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -14,29 +10,37 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Box from "@mui/material/Box";
+
+
+//TODO: make the links changed when the filter is changed for better UX
+
+
+//TODO: Accordion moves for some reason when the filter is opened/closed
 
 
 const getAllPossibleGenres = () => {
     return Object.keys(genresMap);
 }
+const allMovieGenres = getAllPossibleGenres();
 
 const basicActors = ["Robert Downey Jr.", "Chris Hemsworth", "Scarlett Johansson", "Chris Evans", "Tom Hiddleston", "Ryan Reynolds", "Ryan Gosling"];
 
+// TODO: pagination
+const MOVIES_PER_PAGE = 10;
+const MOVIES_PER_QUERY = 100;
 
 export function FilterSection() {
     const theme = useTheme();
     const [initialRender, setInitialRender] = useState(true);
-    const MOVIES_PER_RESPONSE = 10;
 
-    const allMovieGenres = getAllPossibleGenres();
     const [selectedGenres, setSelectedGenres] = useState([]);
 
     const [toIntersectGenres, setToIntersectGenres] = useState(true);
 
     const toggleGenresAction = () => {
-        setToIntersectGenres(!toIntersectGenres);
+        setToIntersectGenres((oldValue) => !oldValue);
     };
-
 
     const [movieRating, setMovieRating] = useState(7);
 
@@ -48,8 +52,16 @@ export function FilterSection() {
 
     const [isAccordionOpen, setIsAccordionOpen] = useState(true);
 
+    let abortController = null;
+    const abortLastRequest = () => {
+        if (abortController) abortController.abort();
+    };
+    const createAbortController = () => {
+        abortController = new AbortController();
+    };
+
     const handleAccordionToggle = () => {
-        setIsAccordionOpen(!isAccordionOpen);
+        setIsAccordionOpen((oldValue) => !oldValue);
     };
 
     const handleAccordionClose = () => {
@@ -61,21 +73,18 @@ export function FilterSection() {
     };
 
     const toggleFilterVisible = () => {
-        setIsGenreFilterVisible(!isGenreFilterVisible);
+        setIsGenreFilterVisible((oldValue) => !oldValue);
     }
 
-    const prepareQueryFunction = () => {
+    const prepareQueryFunction = (signal = {}) => {
         const queryBuilder = new MovieQueryBuilder()
-            .topRatedMovies(MOVIES_PER_RESPONSE)
-            .useJoiner(isGenreFilterVisible && !toIntersectGenres ? '|' : ',');  // use OR operator for genres if the genre filter is visible and genres shouldn't be intersected
-
-        if (isGenreFilterVisible) {
-            queryBuilder.byGenres(selectedGenres);
-        } else {
-            queryBuilder.withActors(selectedActors);
-        }
-
-        return () => queryBuilder.fetch();
+            .minMovieRating(movieRating)
+            .numberTopRatedMovies(MOVIES_PER_PAGE)
+            .useJoiner(toIntersectGenres ? ',' : '|')
+            .withActors(selectedActors)
+            .byGenres(selectedGenres)
+        ;
+        return () => queryBuilder.fetch(signal);
     }
 
     const executeQuery = (queryFunc) => {
@@ -86,13 +95,18 @@ export function FilterSection() {
             setRecommendedMovies(uniqueMovies.filter((movie) => movie.vote_average >= movieRating)
                 .sort((a, b) => b.vote_average - a.vote_average));
         });
-
     }
 
     const executeQueryButton = () => {
         handleAccordionClose();
-        executeQuery(prepareQueryFunction());
+
+        abortLastRequest();
+        createAbortController();
+        const {signal} = abortController;
+
+        executeQuery(prepareQueryFunction(signal));
     }
+
 
     useEffect(() => {
         // prevents double initial rendering due to route "/" of Root and this Component
@@ -100,21 +114,22 @@ export function FilterSection() {
             setInitialRender(false);
             return;
         }
-        const abortController = new AbortController();
+
+        createAbortController();
         const {signal} = abortController;
 
-        executeQuery(() => getTopRatedMovies(MOVIES_PER_RESPONSE, signal));
+        executeQuery(() => getTopRatedMovies(MOVIES_PER_PAGE, signal));
 
         return () => {
-            abortController.abort();
+            abortLastRequest();
         }
     }, [initialRender]);
 
     useEffect(() => {
         handleAccordionOpen();
-    }, [isGenreFilterVisible])
+    }, [isGenreFilterVisible]);
 
-
+    // TODO: separate by components, props connection
     return (<>
 
         <Container>
@@ -124,15 +139,13 @@ export function FilterSection() {
                               label="Genres / Actors filter"
             />
 
-
-            <Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}
-                       sx={{marginTop: '20px', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)'}}>
+            {/*sx={{marginTop: '20px', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)'}}*/}
+            <Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{backgroundColor: '#f5f5f5'}}
-                >
+                    sx={{backgroundColor: '#f5f5f5'}}>
                     <Typography>Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -189,22 +202,29 @@ export function FilterSection() {
                             />
                     }
 
-                    <Typography variant="h4" sx={{marginTop: "5vh"}}>Minimum Movie rating</Typography>
-                    <Rating
-                        name="customized-10"
-                        defaultValue={7}
-                        max={10}
-                        value={movieRating}
-                        precision={0.5}
-                        sx={{
-                            "& .MuiRating-iconFilled": {
-                                color: theme.palette.primary.main,
-                            },
-                        }}
-                        onChange={(event, newValue) => {
-                            setMovieRating(newValue);
-                        }}
-                    />
+                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: "5vh"}}>
+                        <Typography variant="h4">Minimum Movie rating</Typography>
+                        <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
+                            <Rating
+                                name="customized-10"
+                                defaultValue={7}
+                                max={10}
+                                value={movieRating}
+                                precision={0.25}
+                                sx={{
+                                    "& .MuiRating-iconFilled": {
+                                        color: theme.palette.primary.main,
+                                    },
+                                    mx: 2, // Adding some horizontal margin
+                                }}
+                                onChange={(event, newValue) => {
+                                    setMovieRating(newValue);
+                                }}
+                            />
+                            <Typography variant="subtitle"><strong>{movieRating}</strong></Typography>
+                        </Box>
+                    </Box>
+
 
                 </AccordionDetails>
             </Accordion>
