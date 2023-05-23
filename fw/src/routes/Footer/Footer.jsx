@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, IconButton, Box, Container } from "@mui/material";
+import { AppBar, Box, Container, IconButton, Toolbar, Typography } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 const styles = {
@@ -12,11 +12,11 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
+        width: "100%"
     },
     grow: {
-        flexGrow: 1,
-    },
+        flexGrow: 1
+    }
 };
 
 export function Footer() {
