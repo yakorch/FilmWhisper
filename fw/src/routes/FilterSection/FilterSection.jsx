@@ -1,6 +1,15 @@
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
-import {Autocomplete, Container, Rating, Switch, TextField, Typography} from "@mui/material";
+import {
+    Autocomplete,
+    Container,
+    LinearProgress,
+    Pagination,
+    Rating,
+    Switch,
+    TextField,
+    Typography
+} from "@mui/material";
 import {genresMap, getTopRatedMovies, MovieQueryBuilder} from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
 import {RecommendedMovies} from "./RecommendedMovies/RecommendedMovies";
@@ -14,9 +23,6 @@ import Box from "@mui/material/Box";
 
 
 //TODO: make the links changed when the filter is changed for better UX
-
-
-//TODO: Accordion moves for some reason when the filter is opened/closed
 
 
 const getAllPossibleGenres = () => {
@@ -36,10 +42,10 @@ export function FilterSection() {
 
     const [selectedGenres, setSelectedGenres] = useState([]);
 
-    const [toIntersectGenres, setToIntersectGenres] = useState(true);
+    const [toIntersectOptions, setToIntersectOptions] = useState(true);
 
     const toggleGenresAction = () => {
-        setToIntersectGenres((oldValue) => !oldValue);
+        setToIntersectOptions((oldValue) => !oldValue);
     };
 
     const [movieRating, setMovieRating] = useState(7);
@@ -50,7 +56,14 @@ export function FilterSection() {
 
     const [isGenreFilterVisible, setIsGenreFilterVisible] = useState(true);
 
-    const [isAccordionOpen, setIsAccordionOpen] = useState(true);
+    const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+
+    const [isFetching, setIsFetching] = useState(false);
+
+    const [allFetchedMovies, setAllFetchedMovies] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+
 
     let abortController = null;
     const abortLastRequest = () => {
@@ -79,8 +92,8 @@ export function FilterSection() {
     const prepareQueryFunction = (signal = {}) => {
         const queryBuilder = new MovieQueryBuilder()
             .minMovieRating(movieRating)
-            .numberTopRatedMovies(MOVIES_PER_PAGE)
-            .useJoiner(toIntersectGenres ? ',' : '|')
+            .numberTopRatedMovies(MOVIES_PER_QUERY)
+            .useJoiner(toIntersectOptions ? ',' : '|')
             .withActors(selectedActors)
             .byGenres(selectedGenres);
 
@@ -88,8 +101,12 @@ export function FilterSection() {
     }
 
     const executeQuery = (queryFunc) => {
+        setIsFetching(true);
         queryFunc().then((movies) => {
-            setRecommendedMovies(movies);
+            setAllFetchedMovies(movies);
+            setRecommendedMovies(movies.slice(0, MOVIES_PER_PAGE));
+            setTotalPages(Math.ceil(movies.length / MOVIES_PER_PAGE));
+            setIsFetching(false);
         });
     }
 
@@ -103,6 +120,13 @@ export function FilterSection() {
         executeQuery(prepareQueryFunction(signal));
     }
 
+    const handlePageChange = (event, value) => {
+        setPage(value);
+        const start = (value - 1) * MOVIES_PER_PAGE;
+        const end = start + MOVIES_PER_PAGE;
+        setRecommendedMovies(allFetchedMovies.slice(start, end));
+        window.scrollTo(0, 0);
+    }
 
     useEffect(() => {
         // prevents double initial rendering due to route "/" of Root and this Component
@@ -111,10 +135,7 @@ export function FilterSection() {
             return;
         }
 
-        createAbortController();
-        const {signal} = abortController;
-
-        executeQuery(() => getTopRatedMovies(MOVIES_PER_PAGE, signal));
+        executeQueryButton();
 
         return () => {
             abortLastRequest();
@@ -125,44 +146,32 @@ export function FilterSection() {
         handleAccordionOpen();
     }, [isGenreFilterVisible]);
 
+
     // TODO: separate by components, props connection
     return (<>
 
         <Container>
-
-            <FormControlLabel sx={{marginTop: "3vh", marginBottom: "1vh"}}
-                              control={<Switch checked={!isGenreFilterVisible} onChange={toggleFilterVisible}/>}
-                              label="Genres / Actors filter"
-            />
-
             <Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{backgroundColor: '#f5f5f5'}}>
+                    sx={{backgroundColor: "#f5f5f5", marginTop: "3vh"}}>
                     <Typography>Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography variant="h3">
+
+
+                    <Typography variant="h4">
                         What {isGenreFilterVisible ? "genres" : "actors"} do you prefer?
-
-
                     </Typography>
 
 
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={toIntersectGenres}
-                                onChange={toggleGenresAction}
-                            />
-                        }
-                        label={toIntersectGenres ? "Intersection" : "U for Union!"}
-                        sx={{visibility: isGenreFilterVisible ? "visible" : "hidden"}}
-
-
+                    <FormControlLabel sx={{my: "2vh"}}
+                                      control={<Switch checked={!isGenreFilterVisible} onChange={toggleFilterVisible}/>}
+                                      label="Genres / Actors filter"
                     />
+
 
                     {
                         isGenreFilterVisible ?
@@ -196,9 +205,18 @@ export function FilterSection() {
                                 />)}
                             />
                     }
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={toIntersectOptions}
+                                onChange={toggleGenresAction}
+                            />
+                        }
+                        label={toIntersectOptions ? "Intersection" : "U for Union!"}
+                    />
 
-                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: "5vh"}}>
-                        <Typography variant="h4">Minimum Movie rating</Typography>
+                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: "2vh"}}>
+                        <Typography variant="h5">Minimum Movie rating</Typography>
                         <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
                             <Rating
                                 name="customized-10"
@@ -220,14 +238,22 @@ export function FilterSection() {
                         </Box>
                     </Box>
 
+                    <Button variant="contained" color="primary" onClick={executeQueryButton}
+                            sx={{fontSize: '1.2rem', padding: '1rem 1rem', my: "2vh"}}>Find movies</Button>
+
 
                 </AccordionDetails>
             </Accordion>
 
-            <Button variant="contained" color="primary" onClick={executeQueryButton}
-                    sx={{fontSize: '1.2rem', padding: '1rem 1rem', my: "2vh"}}>Find movies</Button>
-
-            <RecommendedMovies movies={recommendedMovies}/>
+            {isFetching ? (
+                <LinearProgress sx={{my: "20vh"}}/>
+            ) : <>
+                <RecommendedMovies movies={recommendedMovies}/>
+                <Box display="flex" justifyContent="center" sx={{marginBottom: "5vh"}}>
+                    <Pagination count={totalPages} page={page} onChange={handlePageChange}/>
+                </Box>
+            </>
+            }
 
         </Container>
     </>)
