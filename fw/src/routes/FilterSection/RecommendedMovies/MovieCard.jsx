@@ -1,21 +1,12 @@
-import { React, useState } from "react";
-import {
-    Card,
-    CardContent,
-    CardMedia,
-    Chip,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from "@mui/material";
-import { genresMap } from "../../../TMDBAPI";
+import {React, useState} from "react";
+import {Card, CardContent, CardMedia, Chip, Dialog, DialogContent, DialogTitle, Typography,} from "@mui/material";
+import {genresMap} from "../../../TMDBAPI";
 import Box from "@mui/material/Box";
-import StarIcon from "@mui/icons-material/Star";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import CancelIcon from "@mui/icons-material/Cancel";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import { useTheme } from "@mui/material/styles";
+import StarIcon from '@mui/icons-material/Star';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import {useTheme} from "@mui/material/styles";
 
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,6 +23,9 @@ for (const [key, value] of Object.entries(genresMap)) {
 const maxDescriptionLength = 180;
 const titleLength = 21;
 
+const initialMovieCardStyle = {maxWidth: 360, p: "2vh", m: "5vh"};
+
+
 const chipBoxStyle = {
     display: "flex",
     flexWrap: "wrap",
@@ -40,7 +34,17 @@ const chipBoxStyle = {
     justifyContent: "center",
 };
 
-const MovieCard = ({ movie }) => {
+const dialogImageStyle = {
+    height: "480px",
+    width: "auto",
+    display: "block",
+    margin: "0 auto",
+};
+
+const descriptionBoxStyle = {display: 'flex', justifyContent: 'space-between', mt: 2};
+
+
+const MovieCard = ({movie}) => {
     const theme = useTheme();
 
     const imageURL = "https://image.tmdb.org/t/p/w500";
@@ -92,10 +96,7 @@ const MovieCard = ({ movie }) => {
 
     return (
         <>
-            <Card
-                sx={{ maxWidth: 360, p: "2vh", m: "5vh" }}
-                onClick={openDialog}
-            >
+            <Card sx={initialMovieCardStyle} onClick={openDialog}>
                 <CardMedia
                     component="img"
                     height="500"
@@ -108,7 +109,7 @@ const MovieCard = ({ movie }) => {
                     </Typography>
                     <Typography variant="subtitle1">
                         Rating: <strong>{vote_average}</strong>{" "}
-                        <StarIcon sx={iconStyle} /> ({vote_count} votes)
+                        <StarIcon sx={iconStyle}/> ({vote_count} votes)
                     </Typography>
                 </CardContent>
             </Card>
@@ -120,7 +121,7 @@ const MovieCard = ({ movie }) => {
                 fullWidth
             >
                 <DialogTitle variant="h4">{title}</DialogTitle>
-                <DialogContent sx={{ overflowY: "auto" }}>
+                <DialogContent sx={{overflowY: "auto"}}>
                     <Box
                         sx={{
                             display: "flex",
@@ -129,51 +130,46 @@ const MovieCard = ({ movie }) => {
                             alignItems: "center",
                         }}
                     >
-                        <Box sx={{ flex: "1 1 0", marginRight: "16px" }}>
+                        <Box sx={{flex: "1 1 0", marginRight: "16px"}}>
                             <CardMedia
                                 component="img"
-                                sx={{
-                                    height: "480px",
-                                    width: "auto",
-                                    display: "block",
-                                    margin: "0 auto",
-                                }}
+                                sx={dialogImageStyle}
                                 image={`${imageURL}${poster_path}`}
                                 alt={title}
                             />
                         </Box>
-                        <Box sx={{ flex: "1 1 0" }}>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                        <Box sx={{flex: "1 1 0"}}>
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Rating: <strong>{vote_average}</strong>{" "}
-                                <StarIcon sx={iconStyle} /> ({vote_count} votes)
+                                <StarIcon sx={iconStyle}/> ({vote_count} votes)
                             </Typography>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Release Date: {release_date}
                             </Typography>
 
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Original Language: {original_language}
                             </Typography>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Popularity: {popularity}
                             </Typography>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Adult:{" "}
                                 {adult ? (
-                                    <CheckCircleOutlineIcon sx={iconStyle} />
+                                    <CheckCircleOutlineIcon sx={iconStyle}/>
                                 ) : (
-                                    <CancelIcon sx={iconStyle} />
+                                    <CancelIcon sx={iconStyle}/>
                                 )}
                             </Typography>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 Video:{" "}
                                 {video ? (
-                                    <VideocamIcon sx={iconStyle} />
+                                    <VideocamIcon sx={iconStyle}/>
                                 ) : (
-                                    <CancelIcon sx={iconStyle} />
+                                    <CancelIcon sx={iconStyle}/>
                                 )}
                             </Typography>
-                            <Typography sx={{ mt: 1 }} variant="subtitle1">
+                            <Typography sx={{mt: 1}} variant="subtitle1">
                                 <strong>Genres:</strong>
                             </Typography>
                             <Box sx={chipBoxStyle}>
@@ -181,7 +177,7 @@ const MovieCard = ({ movie }) => {
                                     <Chip
                                         key={index}
                                         label={movieIDToGenreName[genre_id]}
-                                        sx={{ ml: 0.5, mt: 0.5 }}
+                                        sx={{ml: 0.5, mt: 0.5}}
                                     />
                                 ))}
                             </Box>
@@ -190,39 +186,22 @@ const MovieCard = ({ movie }) => {
                                 variant="body2"
                                 color="text.secondary"
                                 onClick={toggleDescriptionExpanded}
-                                sx={{ py: "3vh" }}
+                                sx={{py: "3vh"}}
                             >
                                 {descriptionToDisplay}
                                 {!isDescriptionExpanded && "..."}
                             </Typography>
                         </Box>
                     </Box>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            mt: 2,
-                        }}
-                    >
-                        <Fab
-                            color={isLiked ? "secondary" : "primary"}
-                            onClick={handleLikeDislike}
-                        >
-                            {isLiked ? (
-                                <FavoriteIcon />
-                            ) : (
-                                <FavoriteBorderIcon />
-                            )}
+
+                    <Box sx={descriptionBoxStyle}>
+                        <Fab color={isLiked ? "secondary" : "primary"} onClick={handleLikeDislike}>
+                            {isLiked ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
                         </Fab>
-                        <Fab
-                            variant="extended"
-                            color={isInList ? "secondary" : "primary"}
-                            onClick={handleAddRemoveFromList}
-                        >
-                            {isInList ? <RemoveIcon /> : <AddIcon />}{" "}
-                            {isInList
-                                ? "Remove from Watchlist"
-                                : "Add to Watchlist"}
+                        <Fab variant="extended" color={isInList ? "secondary" : "primary"}
+                             onClick={handleAddRemoveFromList}>
+                            {isInList ? <RemoveIcon/> :
+                                <AddIcon/>} {isInList ? "Remove from Watchlist" : "Add to Watchlist"}
                         </Fab>
                     </Box>
                 </DialogContent>
