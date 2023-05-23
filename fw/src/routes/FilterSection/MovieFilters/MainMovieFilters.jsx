@@ -1,18 +1,27 @@
-import {Autocomplete, Switch, TextField, Typography} from "@mui/material";
+import { Autocomplete, Switch, TextField, Typography } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import React from "react";
-import {genresMap} from "../../../TMDBAPI";
+import { genresMap } from "../../../TMDBAPI";
 
 const getAllPossibleGenres = () => {
     return Object.keys(genresMap);
-}
+};
 const allMovieGenres = getAllPossibleGenres();
 
 const basicActors = ["Robert Downey Jr.", "Chris Hemsworth", "Scarlett Johansson", "Chris Evans", "Tom Hiddleston", "Ryan Reynolds", "Ryan Gosling"];
 
 
-export function MainMovieFilters({isGenreFilterVisible, toggleFilterVisible, selectedGenres, setSelectedGenres, selectedActors, setSelectedActors, toIntersectOptions, toggleGenresAction}) {
+export function MainMovieFilters({
+                                     isGenreFilterVisible,
+                                     toggleFilterVisible,
+                                     selectedGenres,
+                                     setSelectedGenres,
+                                     selectedActors,
+                                     setSelectedActors,
+                                     toIntersectOptions,
+                                     toggleGenresAction
+                                 }) {
     return (
         <>
             <Typography variant="h4">
@@ -20,8 +29,8 @@ export function MainMovieFilters({isGenreFilterVisible, toggleFilterVisible, sel
             </Typography>
 
 
-            <FormControlLabel sx={{my: "2vh"}}
-                              control={<Switch checked={!isGenreFilterVisible} onChange={toggleFilterVisible}/>}
+            <FormControlLabel sx={{ my: "2vh" }}
+                              control={<Switch checked={!isGenreFilterVisible} onChange={toggleFilterVisible} />}
                               label="Genres / Actors filter"
             />
 
@@ -68,5 +77,5 @@ export function MainMovieFilters({isGenreFilterVisible, toggleFilterVisible, sel
                 label={toIntersectOptions ? "Intersection" : "U for Union!"}
             />
         </>
-    )
+    );
 }

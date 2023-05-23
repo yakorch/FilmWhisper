@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from "react";
-import {Container, LinearProgress, Typography} from "@mui/material";
-import {MovieQueryBuilder} from "../../TMDBAPI";
-import {useTheme} from "@mui/material/styles";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {MovieRecommendationSection} from "./MovieRecommendationSection";
-import {MainMovieFilters} from "./MovieFilters/MainMovieFilters";
-import {MovieRatingChoice} from "./MovieFilters/MovieRatingChoice";
+import React, { useEffect, useState } from "react";
+import { Container, LinearProgress, Typography } from "@mui/material";
+import { MovieQueryBuilder } from "../../TMDBAPI";
+import { useTheme } from "@mui/material/styles";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { MovieRecommendationSection } from "./MovieRecommendationSection";
+import { MainMovieFilters } from "./MovieFilters/MainMovieFilters";
+import { MovieRatingChoice } from "./MovieFilters/MovieRatingChoice";
 
 
 //TODO: make the links changed when the filter is changed for better UX
@@ -68,18 +68,18 @@ export function HomeFilterContainer() {
 
     const toggleFilterVisible = () => {
         setIsGenreFilterVisible((oldValue) => !oldValue);
-    }
+    };
 
     const prepareQueryFunction = (signal = {}) => {
         const queryBuilder = new MovieQueryBuilder()
             .minMovieRating(movieRating)
             .numberTopRatedMovies(MOVIES_PER_QUERY)
-            .useJoiner(toIntersectOptions ? ',' : '|')
+            .useJoiner(toIntersectOptions ? "," : "|")
             .withActors(selectedActors)
             .byGenres(selectedGenres);
 
         return () => queryBuilder.fetch(signal);
-    }
+    };
 
     const executeQuery = (queryFunc) => {
         setIsFetching(true);
@@ -94,17 +94,17 @@ export function HomeFilterContainer() {
 
         setIsFetching(false);
 
-    }
+    };
 
     const executeQueryButton = () => {
         handleAccordionClose();
 
         abortLastRequest();
         createAbortController();
-        const {signal} = abortController;
+        const { signal } = abortController;
 
         executeQuery(prepareQueryFunction(signal));
-    }
+    };
 
     const handlePageChange = (event, value) => {
         setPage(value);
@@ -112,7 +112,7 @@ export function HomeFilterContainer() {
         const end = start + MOVIES_PER_PAGE;
         setRecommendedMovies(allFetchedMovies.slice(start, end));
         window.scrollTo(0, 0);
-    }
+    };
 
     useEffect(() => {
         // prevents double initial rendering due to route "/" of Root and this Component
@@ -125,7 +125,7 @@ export function HomeFilterContainer() {
 
         return () => {
             abortLastRequest();
-        }
+        };
     }, [initialRender]);
 
     useEffect(() => {
@@ -137,10 +137,10 @@ export function HomeFilterContainer() {
         <Container>
             <Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{backgroundColor: "#f5f5f5", marginTop: "3vh"}}>
+                    sx={{ backgroundColor: "#f5f5f5", marginTop: "3vh" }}>
                     <Typography>Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -149,10 +149,10 @@ export function HomeFilterContainer() {
                                       toggleFilterVisible={toggleFilterVisible} selectedActors={selectedActors}
                                       setSelectedActors={setSelectedActors} selectedGenres={selectedGenres}
                                       setSelectedGenres={setSelectedGenres} toggleGenresAction={toggleGenresAction}
-                                      toIntersectOptions={toIntersectOptions}/>
+                                      toIntersectOptions={toIntersectOptions} />
 
                     <MovieRatingChoice movieRating={movieRating} setMovieRating={setMovieRating}
-                                       executeQueryButton={executeQueryButton}/>
+                                       executeQueryButton={executeQueryButton} />
 
 
                 </AccordionDetails>
@@ -160,12 +160,12 @@ export function HomeFilterContainer() {
 
 
             {isFetching ? (
-                <LinearProgress sx={{my: "20vh"}}/>
+                <LinearProgress sx={{ my: "20vh" }} />
             ) : <MovieRecommendationSection recommendedMovies={recommendedMovies} totalPages={totalPages} page={page}
                                             handlePageChange={handlePageChange}></MovieRecommendationSection>
 
             }
 
         </Container>
-    </>)
+    </>);
 }

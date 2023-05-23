@@ -1,18 +1,18 @@
 import Box from "@mui/material/Box";
-import {Rating, Typography} from "@mui/material";
+import { Rating, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import React from "react";
-import {useTheme} from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 
 const outerBoxStyle = {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: "2vh"
+    display: "flex", flexDirection: "column", alignItems: "center", marginTop: "2vh"
 };
 
-const innerBoxStyle = {display: 'flex', alignItems: 'center', mt: 1};
+const innerBoxStyle = { display: "flex", alignItems: "center", mt: 1 };
 
-const buttonStyle = {fontSize: '1.2rem', padding: '1rem 1rem', my: "2vh"};
+const buttonStyle = { fontSize: "1.2rem", padding: "1rem 1rem", my: "2vh" };
 
-export function MovieRatingChoice({movieRating, setMovieRating, executeQueryButton}) {
+export function MovieRatingChoice({ movieRating, setMovieRating, executeQueryButton }) {
     const theme = useTheme();
     return (
         <>
@@ -27,9 +27,9 @@ export function MovieRatingChoice({movieRating, setMovieRating, executeQueryButt
                         precision={0.5}
                         sx={{
                             "& .MuiRating-iconFilled": {
-                                color: theme.palette.primary.main,
+                                color: theme.palette.primary.main
                             },
-                            mx: 2,
+                            mx: 2
                         }}
                         onChange={(event, newValue) => {
                             setMovieRating(newValue);
@@ -42,5 +42,5 @@ export function MovieRatingChoice({movieRating, setMovieRating, executeQueryButt
             <Button variant="contained" color="primary" onClick={executeQueryButton}
                     sx={buttonStyle}>Find movies</Button>
         </>
-    )
+    );
 }

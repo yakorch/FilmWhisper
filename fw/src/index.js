@@ -1,51 +1,51 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {Root} from "./routes/Root";
+import { Root } from "./routes/Root";
 import ErrorPage from "./errorPage";
-import {UserAccount} from "./routes/UserAccount/UserAccount";
-import {FAQSection} from "./routes/FAQSection/FAQSection";
-import {ThemeProvider} from "@mui/material";
+import { UserAccount } from "./routes/UserAccount/UserAccount";
+import { FAQSection } from "./routes/FAQSection/FAQSection";
+import { ThemeProvider } from "@mui/material";
 import theme from "./theme.js";
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import SignIn from "./routes/Signing/SignIn/SignIn";
 import SignUp from "./routes/Signing/SignUp/SignUp";
-import {AuthProvider} from "./routes/Signing/AuthContext";
+import { AuthProvider } from "./routes/Signing/AuthContext";
 import LogOut from "./routes/Signing/LogOut/LogOut";
-import {HomeFilterContainer} from "./routes/FilterSection/HomeFilterContainer";
+import { HomeFilterContainer } from "./routes/FilterSection/HomeFilterContainer";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Root/>,
-        errorElement: <ErrorPage/>,
+        element: <Root />,
+        errorElement: <ErrorPage />,
         children: [
             {
                 path: "/",
-                element: <HomeFilterContainer/>,
+                element: <HomeFilterContainer />
             },
             {
                 path: "faq",
-                element: <FAQSection/>,
+                element: <FAQSection />
             },
             {
                 path: "user-account",
-                element: <UserAccount/>,
+                element: <UserAccount />
             },
             {
                 path: "sign-in",
-                element: <SignIn/>,
+                element: <SignIn />
             },
             {
                 path: "sign-up",
-                element: <SignUp/>,
+                element: <SignUp />
             },
             {
                 path: "logout",
-                element: <LogOut/>,
-            },
-        ],
-    },
+                element: <LogOut />
+            }
+        ]
+    }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -53,7 +53,7 @@ root.render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
             <AuthProvider>
-                <RouterProvider router={router}/>
+                <RouterProvider router={router} />
             </AuthProvider>
         </ThemeProvider>
     </React.StrictMode>
