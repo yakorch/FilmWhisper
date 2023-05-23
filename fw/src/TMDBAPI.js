@@ -36,6 +36,23 @@ function getTopRatedMovies(numMovies, signal) {
         });
 }
 
+function getActorIdByName(apiKey, actorName) {
+    return fetch(
+        `https://api.themoviedb.org/3/search/person?api_key=${apiKey}&query=${encodeURIComponent(
+            actorName
+        )}`
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.results.length > 0) {
+                return data.results[0];
+            } else {
+                throw new Error(`Actor with name ${actorName} not found.`);
+            }
+        });
+}
+
+
 class MovieQueryBuilder {
     constructor() {
         this.apiKey = API_KEY;
