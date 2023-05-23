@@ -1,0 +1,12 @@
+
+
+.group-bar-tabs {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.group-bar-tab {
+    min-width: 150px;
+
+}

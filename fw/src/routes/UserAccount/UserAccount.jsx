@@ -4,8 +4,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
 import MovieCard from '../FilterSection/RecommendedMovies/MovieCard';
+import {GroupBar} from "./GroupBar";
 
 export function UserAccount() {
     const user = {
@@ -48,13 +48,9 @@ export function UserAccount() {
                         <Typography variant="h5" component="h2" gutterBottom>
                             {user.username}
                         </Typography>
-                        <Button variant="contained" color="primary" sx={{
-                            fontSize: '1.2rem',
-                            padding: '1rem 1rem',
-                            my: "2vh"
-                        }} onClick={() => setLikedFilmsVisible(!likedFilmsVisible)}>
-                            {likedFilmsVisible ? 'Hide' : 'Show'} Liked Films
-                        </Button>
+                        
+                        <GroupBar/>
+
                         {likedFilmsVisible && user.likedFilms.map(film => (
                             <MovieCard key={film.id} movie={film}/>
                         ))}
