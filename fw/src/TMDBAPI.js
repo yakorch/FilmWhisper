@@ -52,7 +52,6 @@ function getActorIdByName(apiKey, actorName) {
         });
 }
 
-
 class MovieQueryBuilder {
     constructor() {
         this.apiKey = API_KEY;
@@ -89,19 +88,19 @@ class MovieQueryBuilder {
     }
 
     fetch(signal = {}) {
-        const {apiKey, genres, actors, numMovies, minRating, joiner} = this;
+        const { apiKey, genres, actors, numMovies, minRating, joiner } = this;
 
         // Create promise to fetch actor IDs
-        const actorPromises = actors.map(name =>
-            getActorIdByName(apiKey, name).then(actor => actor.id)
+        const actorPromises = actors.map((name) =>
+            getActorIdByName(apiKey, name).then((actor) => actor.id)
         );
 
         return Promise.all(actorPromises)
-            .then(actorIds => {
+            .then((actorIds) => {
                 // Convert genre names to genre IDs
-                const genreIds = genres.map(genreName => genresMap[genreName]).filter(
-                    id => id !== undefined
-                );
+                const genreIds = genres
+                    .map((genreName) => genresMap[genreName])
+                    .filter((id) => id !== undefined);
 
                 // Build the URL
                 let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100`;
@@ -117,11 +116,11 @@ class MovieQueryBuilder {
                 url += `&vote_average.gte=${minRating}`;
 
                 // Fetch the movies
-                return fetch(url, signal);
+                return fetch(url, signal).then((response) => response.json());
             })
-            .then(response => response.json())
-            .then(data => data.results.slice(0, numMovies));
+            .then((data) => data.results.slice(0, numMovies));
     }
+
 }
 
 export {

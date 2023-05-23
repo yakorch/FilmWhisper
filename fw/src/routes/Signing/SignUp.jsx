@@ -12,10 +12,12 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useAuth } from './AuthContext';
 
 
 export default function SignUp() {
     const navigate = useNavigate();
+    const { setIsAuthenticated } = useAuth();
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -23,6 +25,7 @@ export default function SignUp() {
             email: data.get('email'),
             password: data.get('password'),
         });
+        setIsAuthenticated(true);
         navigate('/user-account');
     };
 

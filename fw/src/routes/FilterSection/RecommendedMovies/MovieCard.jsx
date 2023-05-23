@@ -8,6 +8,12 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import {useTheme} from "@mui/material/styles";
 
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 const movieIDToGenreName = {};
 // reverse the genresMap
 for (const [key, value] of Object.entries(genresMap)) {
@@ -46,6 +52,11 @@ const MovieCard = ({movie}) => {
         vote_average,
         vote_count,
     } = movie;
+
+    const [isLiked, setIsLiked] = useState(false);
+    const [isInList, setIsInList] = useState(false);
+    const handleLikeDislike = () => setIsLiked(!isLiked);
+    const handleAddRemoveFromList = () => setIsInList(!isInList);
 
     const iconStyle = {
         color: theme.palette.primary.main
@@ -148,6 +159,16 @@ const MovieCard = ({movie}) => {
                             </Typography>
 
                         </Box>
+                    </Box>
+                    <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
+                        <Fab color={isLiked ? "secondary" : "primary"} onClick={handleLikeDislike}>
+                            {isLiked ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
+                        </Fab>
+                        <Fab variant="extended" color={isInList ? "secondary" : "primary"}
+                             onClick={handleAddRemoveFromList}>
+                            {isInList ? <RemoveIcon/> :
+                                <AddIcon/>} {isInList ? "Remove from Watchlist": "Add to Watchlist"}
+                        </Fab>
                     </Box>
                 </DialogContent>
             </Dialog>
