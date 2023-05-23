@@ -3,10 +3,8 @@ import Button from "@mui/material/Button";
 import {Autocomplete, Container, Rating, Switch, TextField, Typography} from "@mui/material";
 import {
     genresMap,
-    getMoviesByActorNames,
     getTopRatedMovies,
-    getTopRatedMoviesByGenresIntersection,
-    getTopRatedMoviesByGenresUnion
+    MovieQueryBuilder
 } from "../../TMDBAPI";
 import {useTheme} from "@mui/material/styles";
 import {RecommendedMovies} from "./RecommendedMovies/RecommendedMovies";
@@ -67,16 +65,17 @@ export function FilterSection() {
     }
 
     const prepareQueryFunction = () => {
-        if (!isGenreFilterVisible) {
-            return () => {
-                return getMoviesByActorNames(selectedActors, MOVIES_PER_RESPONSE)
-            };
+        const queryBuilder = new MovieQueryBuilder()
+            .topRatedMovies(MOVIES_PER_RESPONSE)
+            .useJoiner(isGenreFilterVisible && !toIntersectGenres ? '|' : ',');  // use OR operator for genres if the genre filter is visible and genres shouldn't be intersected
+
+        if (isGenreFilterVisible) {
+            queryBuilder.byGenres(selectedGenres);
         } else {
-            const APIFunc = toIntersectGenres ? getTopRatedMoviesByGenresIntersection : getTopRatedMoviesByGenresUnion;
-            return () => {
-                return APIFunc(MOVIES_PER_RESPONSE, selectedGenres)
-            };
+            queryBuilder.withActors(selectedActors);
         }
+
+        return () => queryBuilder.fetch();
     }
 
     const executeQuery = (queryFunc) => {

@@ -1,16 +1,43 @@
-import fetch from 'node-fetch';
-
 const API_KEY = "28bfad0281f3e0097699529a7f57474a";
 
-function getTopRatedMovies(apiKey, numMovies) {
-    return fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`)
+const genresMap = {
+    "Action": 28,
+    "Adventure": 12,
+    "Animation": 16,
+    "Comedy": 35,
+    "Crime": 80,
+    "Documentary": 99,
+    "Drama": 18,
+    "Family": 10751,
+    "Fantasy": 14,
+    "History": 36,
+    "Horror": 27,
+    "Music": 10402,
+    "Mystery": 9648,
+    "Romance": 10749,
+    "Science Fiction": 878,
+    "TV Movie": 10770,
+    "Thriller": 53,
+    "War": 10752,
+    "Western": 37
+};
+function getTopRatedMovies(numMovies, signal) {
+    const url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
+
+    return fetch(url, { signal })
         .then(response => response.json())
-        .then(data => data.results.slice(0, numMovies));
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                return data.results.slice(0, numMovies);
+            } else {
+                throw new Error("No top rated movies found.");
+            }
+        });
 }
 
-function getTopRatedMoviesByGenres(apiKey, numMovies, genres) {
+function getTopRatedMoviesByGenres(numMovies, genres) {
     const genreIds = genres.map(genreName => genresMap[genreName]).filter(id => id !== undefined);
-    return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreIds.join(',')}`)
+    return fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&with_genres=${genreIds.join(',')}`)
         .then(response => response.json())
         .then(data => data.results.slice(0, numMovies));
 }
@@ -24,12 +51,13 @@ function getActorIdByName(apiKey, actorName) {
         .then((response) => response.json())
         .then((data) => {
             if (data.results.length > 0) {
-                return data.results[0].id;
+                return data.results[0];
             } else {
                 throw new Error(`Actor with name ${actorName} not found.`);
             }
         });
 }
+
 
 function getMoviesByActorId(apiKey, actorId, numMovies) {
     return fetch(
@@ -49,19 +77,14 @@ function getMoviesByActorNames(apiKey, actorNames, numMovies) {
     return Promise.all(promises).then((results) => results.flat());
 }
 
-export {
-    getTopRatedMovies,
-    getTopRatedMoviesByGenres,
-    getMoviesByActorNames,
-};
-
 
 class MovieQueryBuilder {
-    constructor(apiKey) {
-        this.apiKey = apiKey;
+    constructor() {
+        this.apiKey = API_KEY;
         this.genres = [];
         this.actors = [];
         this.numMovies = 10;
+        this.joiner = ",";
     }
 
     topRatedMovies(numMovies) {
@@ -79,30 +102,52 @@ class MovieQueryBuilder {
         return this;
     }
 
+    useJoiner(joiner) {
+        this.joiner = joiner;
+        return this;
+    }
+
     fetch() {
-        let fetchPromise = this.genres.length
-            ? getTopRatedMoviesByGenres(this.apiKey, this.numMovies, this.genres)
-            : getTopRatedMovies(this.apiKey, this.numMovies);
+        const { apiKey, genres, actors, numMovies, joiner } = this;
 
-        if (this.actors.length) {
-            fetchPromise = fetchPromise
-                .then(movies => movies.map(movie => ({ ...movie, actors: [] })))
-                .then(movies => {
-                    const actorFetches = this.actors.map(actor =>
-                        getMoviesByActorNames(this.apiKey, [actor], this.numMovies)
-                            .then(actorMovies => {
-                                movies.forEach(movie => {
-                                    if (actorMovies.some(actorMovie => actorMovie.id === movie.id)) {
-                                        movie.actors.push(actor);
-                                    }
-                                });
-                            })
-                    );
+        // Create promise to fetch actor IDs
+        const actorPromises = actors.map(name =>
+            getActorIdByName(apiKey, name).then(actor => actor.id)
+        );
 
-                    return Promise.all(actorFetches).then(() => movies);
-                });
-        }
+        return Promise.all(actorPromises)
+            .then(actorIds => {
+                // Convert genre names to genre IDs
+                const genreIds = genres.map(genreName => genresMap[genreName]).filter(
+                    id => id !== undefined
+                );
 
-        return fetchPromise;
+                // Build the URL
+                let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100`;
+
+                if (genreIds.length) {
+                    url += `&with_genres=${genreIds.join(joiner)}`;
+                }
+
+                if (actorIds.length) {
+                    url += `&with_cast=${actorIds.join(joiner)}`;
+                }
+
+                // Fetch the movies
+                return fetch(url);
+            })
+            .then(response => response.json())
+            .then(data => data.results.slice(0, numMovies));
     }
 }
+
+export {
+    getTopRatedMovies,
+    getTopRatedMoviesByGenres,
+    getMoviesByActorNames,
+    getActorIdByName,
+    getMoviesByActorId,
+    MovieQueryBuilder,
+    API_KEY,
+    genresMap
+};
