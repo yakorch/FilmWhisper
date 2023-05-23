@@ -102,7 +102,6 @@ export function HomeFilterContainer() {
         });
 
         setIsFetching(false);
-
     };
 
     const executeQueryButton = () => {
