@@ -89,11 +89,7 @@ export function FilterSection() {
 
     const executeQuery = (queryFunc) => {
         queryFunc().then((movies) => {
-            const uniqueMovies = Array.from(new Set(movies.map(movie => movie.id)))
-                .map(movieId => movies.find(movie => movie.id === movieId));
-
-            setRecommendedMovies(uniqueMovies.filter((movie) => movie.vote_average >= movieRating)
-                .sort((a, b) => b.vote_average - a.vote_average));
+            setRecommendedMovies(movies);
         });
     }
 
@@ -139,7 +135,6 @@ export function FilterSection() {
                               label="Genres / Actors filter"
             />
 
-            {/*sx={{marginTop: '20px', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)'}}*/}
             <Accordion expanded={isAccordionOpen} onChange={handleAccordionToggle}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
@@ -210,7 +205,7 @@ export function FilterSection() {
                                 defaultValue={7}
                                 max={10}
                                 value={movieRating}
-                                precision={0.25}
+                                precision={0.5}
                                 sx={{
                                     "& .MuiRating-iconFilled": {
                                         color: theme.palette.primary.main,
