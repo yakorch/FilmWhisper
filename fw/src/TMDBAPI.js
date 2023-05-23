@@ -1,33 +1,33 @@
 const API_KEY = "28bfad0281f3e0097699529a7f57474a";
 
 const genresMap = {
-    "Action": 28,
-    "Adventure": 12,
-    "Animation": 16,
-    "Comedy": 35,
-    "Crime": 80,
-    "Documentary": 99,
-    "Drama": 18,
-    "Family": 10751,
-    "Fantasy": 14,
-    "History": 36,
-    "Horror": 27,
-    "Music": 10402,
-    "Mystery": 9648,
-    "Romance": 10749,
+    Action: 28,
+    Adventure: 12,
+    Animation: 16,
+    Comedy: 35,
+    Crime: 80,
+    Documentary: 99,
+    Drama: 18,
+    Family: 10751,
+    Fantasy: 14,
+    History: 36,
+    Horror: 27,
+    Music: 10402,
+    Mystery: 9648,
+    Romance: 10749,
     "Science Fiction": 878,
     "TV Movie": 10770,
-    "Thriller": 53,
-    "War": 10752,
-    "Western": 37
+    Thriller: 53,
+    War: 10752,
+    Western: 37,
 };
 
 function getTopRatedMovies(numMovies, signal) {
     const url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
 
-    return fetch(url, {signal})
-        .then(response => response.json())
-        .then(data => {
+    return fetch(url, { signal })
+        .then((response) => response.json())
+        .then((data) => {
             if (data.results && data.results.length > 0) {
                 return data.results.slice(0, numMovies);
             } else {
@@ -88,7 +88,7 @@ class MovieQueryBuilder {
     }
 
     async fetch(signal = {}) {
-        const {apiKey, genres, actors, numMovies, minRating, joiner} = this;
+        const { apiKey, genres, actors, numMovies, minRating, joiner } = this;
 
         const totalPages = Math.ceil(numMovies / 20);
 
@@ -97,7 +97,9 @@ class MovieQueryBuilder {
             getActorIdByName(apiKey, name).then((actor) => actor.id)
         );
 
-        const genreIds = genres.map((genreName) => genresMap[genreName]).filter((id) => id !== undefined);
+        const genreIds = genres
+            .map((genreName) => genresMap[genreName])
+            .filter((id) => id !== undefined);
 
         const actorIds = await Promise.all(actorPromises);
 
@@ -119,18 +121,16 @@ class MovieQueryBuilder {
             url += `&vote_average.gte=${minRating}`;
 
             // Add fetch promise to the array
-            fetchPromises.push(fetch(url, signal).then((response) => response.json()));
+            fetchPromises.push(
+                fetch(url, signal).then((response) => response.json())
+            );
         }
 
         const results = await Promise.all(fetchPromises);
 
-        const allResults = results.flatMap(data => data.results);
+        const allResults = results.flatMap((data) => data.results);
         return allResults.slice(0, numMovies);
     }
 }
 
-export {
-    getTopRatedMovies,
-    MovieQueryBuilder,
-    genresMap
-};
+export { getTopRatedMovies, MovieQueryBuilder, genresMap };
