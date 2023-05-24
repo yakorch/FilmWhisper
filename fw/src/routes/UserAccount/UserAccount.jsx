@@ -1,55 +1,58 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import { FormControlLabel, Switch, TextField } from "@mui/material";
+import {FormControlLabel, LinearProgress, Switch, TextField} from "@mui/material";
 import MovieCard from "../FilterSection/RecommendedMovies/MovieCard";
 import { GroupBar } from "./GroupBar";
 import { useUserID } from "../Signing/UserContext";
 import getUserInfo from "../../utilities/getUserInfo";
+import {useSearchParams} from "react-router-dom";
+import {MovieQueryBuilder} from "../../TMDBAPI";
 
 export function UserAccount() {
     const { userID, setUserID } = useUserID();
+    const [ userInfo, setUserInfo ] = useState({});
+    const [ isFetching, setIsFetching ] = useState(false);
+    const [ initialRender, setInitialRender ] = useState(true);
 
 
-    const dBResponse = getUserInfo(userID);
-    const userInfo = dBResponse[1] || {};
-    //const [isSuccess, userInfo, message] = dBResponse;
+    const executeQuery = () => {
+        setIsFetching(true);
+        getUserInfo(userID).then((newInfo) => {
+            setUserInfo(newInfo[1][0]);
+            setIsFetching(false);
+        });};
 
-    // TODO: fetch info about user from the database
+    useEffect(() => {
+        // prevents double initial rendering due to route "/" of Root and this Component
+        if (initialRender) {
+            setInitialRender(false);
+            return;
+        }
+        executeQuery();
 
-    const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];
+    }, [initialRender]);
 
-    const user = {
-        photo: "userPhoto.png",
-        firstName: userInfo.firstName || "Jim",
-        lastName: userInfo.lastName || "Carrey",
-        email: userInfo.email || "jimcarrey@little.flowers.u",
-
-        likedFilms: [
-            // TODO: fetch info about user from the database
-        ],
-        watchedFilms: [],
-        toWatchFilms: [],
-    };
+    //const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];
 
     const [likedFilmsVisible, setLikedFilmsVisible] = useState(false);
 
     const handleFirstNameChange = (event) => {
-        user.firstName = event.target.value;
+        userInfo.firstName = event.target.value;
     };
 
     const handleLastNameChange = (event) => {
-        user.lastName = event.target.value;
+        userInfo.lastName = event.target.value;
     };
 
     const handleEmailChange = (event) => {
-        user.email = event.target.value;
+        userInfo.email = event.target.value;
     };
 
     const handleAdPreferenceChange = (event) => {
-        user.receiveAds = event.target.checked;
+        userInfo.receiveAds = event.target.checked;
     };
 
     return (
@@ -63,19 +66,6 @@ export function UserAccount() {
                 padding: "20px"
             }}
         >
-            <Paper
-                elevation={3}
-                sx={{
-                    display: "flex",
-                    padding: "3%"
-                }}
-            >
-                <Avatar
-                    alt={user.firstName + " " + user.lastName}
-                    src={user.photo}
-                    sx={{ width: 200, height: 200 }}
-                />
-            </Paper>
 
             <Box
                 sx={{
@@ -93,46 +83,47 @@ export function UserAccount() {
                     <Typography variant="h5" component="h2" gutterBottom>
                         User Profile
                     </Typography>
-
-                    <TextField
-                        label="First Name"
-                        variant="outlined"
-                        value={user.firstName}
-                        onChange={handleFirstNameChange}
-                        sx={{ marginBottom: "10px" }}
-                    />
-
-                    <TextField
+                    {isFetching ? <LinearProgress sx={{my: "20vh"}}/> :
+                        <><TextField
+                            label="First Name"
+                            variant="outlined"
+                            value={userInfo.firstName}
+                            onChange={handleFirstNameChange}
+                            sx={{marginBottom: "10px"}}
+                        />
+                        <TextField
                         label="Last Name"
                         variant="outlined"
-                        value={user.lastName}
+                        value={userInfo.lastName}
                         onChange={handleLastNameChange}
-                        sx={{ marginBottom: "10px" }}
-                    />
+                        sx={{marginBottom: "10px"}}
+                        />
 
-                    <TextField
+                        <TextField
                         label="Email"
                         variant="outlined"
-                        value={user.email}
+                        value={userInfo.email}
                         onChange={handleEmailChange}
-                        sx={{ marginBottom: "10px" }}
-                    />
+                        sx={{marginBottom: "10px"}}
+                        />
 
-                    <FormControlLabel
+                        <FormControlLabel
                         control={
-                            <Switch
-                                checked={user.receiveAds}
-                                onChange={handleAdPreferenceChange}
-                            />
-                        }
+                        <Switch
+                        checked={userInfo.receiveAds}
+                        onChange={handleAdPreferenceChange}
+                        />
+                    }
                         label="Receive Ads"
-                    />
+                        />
 
-                    <GroupBar user={user}/>
+                        <GroupBar user={userInfo}/>
 
-                    {likedFilmsVisible && user.likedFilms.map(film => (
+                    {likedFilmsVisible && userInfo.likedFilms.map(film => (
                         <MovieCard key={film.id} movie={film} />
-                    ))}
+                        ))}
+                        </>
+                    }
                 </Paper>
             </Box>
         </Box>
