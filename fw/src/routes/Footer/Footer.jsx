@@ -7,12 +7,13 @@ const styles = {
         top: "auto",
         bottom: 0,
         margin: "auto",
-        marginTop: "auto",
-        backgroundColor: "primary",
+        padding: '1.5% 0 1.5%',
+        backgroundColor: "transparent",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%"
+        width: "90%",
+        borderTop: '2px solid #6cd793',
     },
     grow: {
         flexGrow: 1
@@ -25,7 +26,7 @@ export function Footer() {
             <Container>
                 {/* Your page content goes here */}
             </Container>
-            <AppBar position="static" color="primary" style={styles.footer}>
+            <AppBar position="static" color="primary" elevation={0} style={styles.footer}>
                 <Toolbar>
                     <IconButton
                         href="https://github.com/yakorch/FilmWhisper.git"
