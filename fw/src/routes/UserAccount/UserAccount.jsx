@@ -16,6 +16,9 @@ export function UserAccount() {
     const [ userInfo, setUserInfo ] = useState({});
     const [ isFetching, setIsFetching ] = useState(false);
     const [ initialRender, setInitialRender ] = useState(true);
+    const [likedFilmsVisible, setLikedFilmsVisible] = useState(false);
+    const [toWatchVisible, setToWatchVisible] = useState(false);
+    const [alreadyWatchedVisible, setAlreadyWatchedVisible] = useState(false);
 
 
     const executeQuery = () => {
@@ -35,9 +38,7 @@ export function UserAccount() {
 
     }, [initialRender]);
 
-    //const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];
-
-    const [likedFilmsVisible, setLikedFilmsVisible] = useState(false);
+    const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];
 
     const handleFirstNameChange = (event) => {
         userInfo.firstName = event.target.value;
@@ -110,7 +111,7 @@ export function UserAccount() {
                         <FormControlLabel
                         control={
                         <Switch
-                        checked={userInfo.receiveAds}
+                        checked={userInfo.notifConsent}
                         onChange={handleAdPreferenceChange}
                         />
                     }
@@ -119,9 +120,15 @@ export function UserAccount() {
 
                         <GroupBar user={userInfo}/>
 
-                    {likedFilmsVisible && userInfo.likedFilms.map(film => (
-                        <MovieCard key={film.id} movie={film} />
-                        ))}
+                            {likedFilmsVisible && userInfo.favourites.map(film => (
+                                <MovieCard key={film.id} movie={film} />
+                                ))}
+                            {alreadyWatchedVisible && userInfo.watched.map(film => (
+                                <MovieCard key={film.id} movie={film} />
+                            ))}
+                            {toWatchVisible && userInfo.to_watch.map(film => (
+                                <MovieCard key={film.id} movie={film} />
+                            ))}
                         </>
                     }
                 </Paper>
