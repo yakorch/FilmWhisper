@@ -17,9 +17,9 @@ export const GroupBar = ({user}) => {
     ];
 
     const whatToShow = [
-        user.likedFilms,
-        user.toWatchFilms,
-        user.watchedFilms,
+        user.favourites,
+        user.to_watch,
+        user.watched,
     ]
 
     const handleTabChange = (_event, newValue) => {
