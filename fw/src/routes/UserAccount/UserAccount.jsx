@@ -16,8 +16,9 @@ export function UserAccount() {
     const {userID, setUserID} = useUserID();
 
 
-    const DBResponse = getUserInfo(userID);
-    const userInfo = DBResponse[1] || {};
+    const dBResponse = getUserInfo(userID);
+    const userInfo = dBResponse[1] || {};
+    //const [isSuccess, userInfo, message] = dBResponse;
 
     // TODO: fetch info about user from the database
 
