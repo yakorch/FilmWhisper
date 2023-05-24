@@ -27,22 +27,18 @@ export function UserAccount() {
     const [likedFilmsVisible, setLikedFilmsVisible] = useState(false);
 
     const handleFirstNameChange = (event) => {
-        // Update the first name in the user object
         user.firstName = event.target.value;
     };
 
     const handleLastNameChange = (event) => {
-        // Update the last name in the user object
         user.lastName = event.target.value;
     };
 
     const handleEmailChange = (event) => {
-        // Update the email in the user object
         user.email = event.target.value;
     };
 
     const handleAdPreferenceChange = (event) => {
-        // Update the ad preference in the user object
         user.receiveAds = event.target.checked;
     };
 
@@ -51,10 +47,10 @@ export function UserAccount() {
             sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'flex-start', // Align the boxes to the upper side
+                alignItems: 'flex-start',
                 justifyContent: 'flex-start',
                 height: '100vh',
-                padding: '20px', // Add padding to create space between the boxes
+                padding: '20px',
             }}
         >
             <Paper
@@ -73,7 +69,7 @@ export function UserAccount() {
 
             <Box
                 sx={{
-                    marginLeft: '20px', // Add margin left to separate the boxes
+                    marginLeft: '20px',
                 }}
             >
                 <Paper
