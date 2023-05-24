@@ -158,7 +158,7 @@ export function HomeFilterContainer() {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{ backgroundColor: "#f5f5f5", marginTop: "3vh" }}>
+                    sx={{ backgroundColor: "#f5f5f5", marginTop: "3vh"}}>
                     <Typography>Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
