@@ -1,20 +1,30 @@
-import React from "react";
+import {React, useState} from "react";
 import "./GroupBar.css";
 import { Tab, Tabs } from "@mui/material";
 import { Link } from "react-router-dom";
+import { RecommendedMovies } from "../FilterSection/RecommendedMovies/RecommendedMovies";
 
-export const GroupBar = () => {
-    const [selectedTab, setSelectedTab] = React.useState(0);
+export const GroupBar = ({user}) => {
+    const [selectedTab, setSelectedTab] = useState(0);
+
+    const [moviesToShow, setMoviesToShow]= useState([]);
+
 
     const groups = [
         { text: "My favs", name: "favs" },
         { text: "Watch Later", name: "watch_later" },
-        { text: "Already Watched", name: "already_watched" },
+        { text: "Already Watched", name: "already_watched" }
     ];
+
+    const whatToShow = [
+        user.likedFilms,
+        user.toWatchFilms,
+        user.watchedFilms,
+    ]
 
     const handleTabChange = (_event, newValue) => {
         setSelectedTab(newValue);
-        // TODO: Spawn film cards...
+        setMoviesToShow(whatToShow[newValue]);
     };
 
     return (
@@ -35,6 +45,8 @@ export const GroupBar = () => {
                     />
                 ))}
             </Tabs>
+
+            <RecommendedMovies movies={moviesToShow}></RecommendedMovies>
         </>
     );
 };
