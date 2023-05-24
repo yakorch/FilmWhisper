@@ -18,6 +18,7 @@ import { useAuth } from '../AuthContext';
 import {CircularProgress} from "@mui/material";
 import * as Realm from "realm-web";
 import signInStyles from "./SignInStyles";
+import getUserInfo from "../../../utilities/getUserInfo";
 
 
 function checkEmail(value) {
@@ -72,6 +73,7 @@ async function login(userInfo) {
         if (check[0].password === userInfo.password){
             return [true, check[0]._id, "Success!"];
         }
+        console.log(getUserInfo(check[0]._id));
 
         return [false, "-1", "Wrong password or email!"];
     } catch (error) {

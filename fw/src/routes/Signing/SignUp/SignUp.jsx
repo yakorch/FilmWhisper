@@ -108,7 +108,7 @@ async function register(userToRegister) {
         // Insert the new document
         const result = await collection.insertOne(userToRegister);
         console.log(result.insertedId);
-        return [true, result, "All's OK!"];
+        return [true, result.insertedId, "All's OK!"];
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         return [false, "-1", "Something went wrong!"];
