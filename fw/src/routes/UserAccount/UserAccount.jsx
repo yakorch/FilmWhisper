@@ -16,18 +16,20 @@ export function UserAccount() {
     const {userID, setUserID} = useUserID();
 
 
-    console.log("User account: ", userID);
-    const userInfo = getUserInfo(userID);
+    const DBResponse = getUserInfo(userID);
+    const userInfo = DBResponse[1] || {};
+
     // TODO: fetch info about user from the database
 
-    console.log("User info Mongo: ", userInfo);
 
     const user = {
         photo: 'userPhoto.png',
-        firstName: 'Jim',
-        lastName: 'Carrey',
-        email: "jimcarrey@little.flowers.u",
+        firstName: userInfo.firstName || 'Jim',
+        lastName: userInfo.lastName || 'Carrey',
+        email: userInfo.email || "jimcarrey@little.flowers.u",
+
         likedFilms: [
+            // TODO: fetch info about user from the database
             // replace these dummy movies with the actual liked movies data
             {id: 1, title: 'Movie 1'},
             {id: 2, title: 'Movie 2'}
