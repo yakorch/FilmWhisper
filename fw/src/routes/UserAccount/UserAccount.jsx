@@ -1,19 +1,16 @@
-import React, {useState} from 'react';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import {TextField} from "@mui/material";
-import {FormControlLabel} from "@mui/material";
-import {Switch} from "@mui/material";
-import MovieCard from '../FilterSection/RecommendedMovies/MovieCard';
-import {GroupBar} from "./GroupBar";
+import React, { useState } from "react";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import { FormControlLabel, Switch, TextField } from "@mui/material";
+import MovieCard from "../FilterSection/RecommendedMovies/MovieCard";
+import { GroupBar } from "./GroupBar";
 import { useUserID } from "../Signing/UserContext";
 import getUserInfo from "../../utilities/getUserInfo";
 
 export function UserAccount() {
-    const {userID, setUserID} = useUserID();
+    const { userID, setUserID } = useUserID();
 
 
     const dBResponse = getUserInfo(userID);
@@ -22,19 +19,19 @@ export function UserAccount() {
 
     // TODO: fetch info about user from the database
 
+    const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];
 
     const user = {
-        photo: 'userPhoto.png',
-        firstName: userInfo.firstName || 'Jim',
-        lastName: userInfo.lastName || 'Carrey',
+        photo: "userPhoto.png",
+        firstName: userInfo.firstName || "Jim",
+        lastName: userInfo.lastName || "Carrey",
         email: userInfo.email || "jimcarrey@little.flowers.u",
 
         likedFilms: [
             // TODO: fetch info about user from the database
-            // replace these dummy movies with the actual liked movies data
-            {id: 1, title: 'Movie 1'},
-            {id: 2, title: 'Movie 2'}
         ],
+        watchedFilms: [],
+        toWatchFilms: [],
     };
 
     const [likedFilmsVisible, setLikedFilmsVisible] = useState(false);
@@ -58,23 +55,23 @@ export function UserAccount() {
     return (
         <Box
             sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                height: '100vh',
-                padding: '20px',
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                height: "100vh",
+                padding: "20px"
             }}
         >
             <Paper
                 elevation={3}
                 sx={{
-                    display: 'flex',
-                    padding: '3%',
+                    display: "flex",
+                    padding: "3%"
                 }}
             >
                 <Avatar
-                    alt={user.firstName + ' ' + user.lastName}
+                    alt={user.firstName + " " + user.lastName}
                     src={user.photo}
                     sx={{ width: 200, height: 200 }}
                 />
@@ -82,15 +79,15 @@ export function UserAccount() {
 
             <Box
                 sx={{
-                    marginLeft: '20px',
+                    marginLeft: "20px"
                 }}
             >
                 <Paper
                     elevation={3}
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        padding: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        padding: 2
                     }}
                 >
                     <Typography variant="h5" component="h2" gutterBottom>
@@ -102,7 +99,7 @@ export function UserAccount() {
                         variant="outlined"
                         value={user.firstName}
                         onChange={handleFirstNameChange}
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ marginBottom: "10px" }}
                     />
 
                     <TextField
@@ -110,7 +107,7 @@ export function UserAccount() {
                         variant="outlined"
                         value={user.lastName}
                         onChange={handleLastNameChange}
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ marginBottom: "10px" }}
                     />
 
                     <TextField
@@ -118,7 +115,7 @@ export function UserAccount() {
                         variant="outlined"
                         value={user.email}
                         onChange={handleEmailChange}
-                        sx={{ marginBottom: '10px' }}
+                        sx={{ marginBottom: "10px" }}
                     />
 
                     <FormControlLabel
@@ -131,7 +128,7 @@ export function UserAccount() {
                         label="Receive Ads"
                     />
 
-                    <GroupBar />
+                    <GroupBar user={user}/>
 
                     {likedFilmsVisible && user.likedFilms.map(film => (
                         <MovieCard key={film.id} movie={film} />
