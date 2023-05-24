@@ -1,8 +1,8 @@
-import React, {useEffect, useContext} from "react";
+import React, { useContext, useEffect } from "react";
 import "./navigation.css";
-import {Tab, Tabs} from "@mui/material";
-import {Link, useLocation} from "react-router-dom";
-import { AuthContext } from '../../Signing/AuthContext';
+import { Tab, Tabs } from "@mui/material";
+import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../Signing/AuthContext";
 
 export const NavigationBar = () => {
     const location = useLocation();
@@ -11,16 +11,16 @@ export const NavigationBar = () => {
 
     const appPages = isAuthenticated
         ? [
-            {text: "Whisper!", url: "/"},
-            {text: "FAQ", url: "/faq"},
-            {text: "User Account", url: "/user-account"},
-            {text: "Log Out", url: "/logout"},
+            { text: "Whisper!", url: "/" },
+            { text: "FAQ", url: "/faq" },
+            { text: "User Account", url: "/user-account" },
+            { text: "Log Out", url: "/logout" }
         ]
         : [
-            {text: "Whisper!", url: "/"},
-            {text: "FAQ", url: "/faq"},
-            {text: "Sign In", url: "/sign-in"},
-            {text: "Sign Up", url: "/sign-up"},
+            { text: "Whisper!", url: "/" },
+            { text: "FAQ", url: "/faq" },
+            { text: "Sign In", url: "/sign-in" },
+            { text: "Sign Up", url: "/sign-up" }
         ];
 
     useEffect(() => {

@@ -1,33 +1,33 @@
 const API_KEY = "28bfad0281f3e0097699529a7f57474a";
 
 const genresMap = {
-    "Action": 28,
-    "Adventure": 12,
-    "Animation": 16,
-    "Comedy": 35,
-    "Crime": 80,
-    "Documentary": 99,
-    "Drama": 18,
-    "Family": 10751,
-    "Fantasy": 14,
-    "History": 36,
-    "Horror": 27,
-    "Music": 10402,
-    "Mystery": 9648,
-    "Romance": 10749,
+    Action: 28,
+    Adventure: 12,
+    Animation: 16,
+    Comedy: 35,
+    Crime: 80,
+    Documentary: 99,
+    Drama: 18,
+    Family: 10751,
+    Fantasy: 14,
+    History: 36,
+    Horror: 27,
+    Music: 10402,
+    Mystery: 9648,
+    Romance: 10749,
     "Science Fiction": 878,
     "TV Movie": 10770,
-    "Thriller": 53,
-    "War": 10752,
-    "Western": 37
+    Thriller: 53,
+    War: 10752,
+    Western: 37
 };
 
 function getTopRatedMovies(numMovies, signal) {
     const url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
 
-    return fetch(url, {signal})
-        .then(response => response.json())
-        .then(data => {
+    return fetch(url, { signal })
+        .then((response) => response.json())
+        .then((data) => {
             if (data.results && data.results.length > 0) {
                 return data.results.slice(0, numMovies);
             } else {
@@ -87,44 +87,50 @@ class MovieQueryBuilder {
         return this;
     }
 
-    fetch(signal = {}) {
+    async fetch(signal = {}) {
         const { apiKey, genres, actors, numMovies, minRating, joiner } = this;
+
+        const totalPages = Math.ceil(numMovies / 20);
 
         // Create promise to fetch actor IDs
         const actorPromises = actors.map((name) =>
             getActorIdByName(apiKey, name).then((actor) => actor.id)
         );
 
-        return Promise.all(actorPromises)
-            .then((actorIds) => {
-                // Convert genre names to genre IDs
-                const genreIds = genres
-                    .map((genreName) => genresMap[genreName])
-                    .filter((id) => id !== undefined);
+        const genreIds = genres
+            .map((genreName) => genresMap[genreName])
+            .filter((id) => id !== undefined);
 
-                // Build the URL
-                let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100`;
+        const actorIds = await Promise.all(actorPromises);
 
-                if (genreIds.length) {
-                    url += `&with_genres=${genreIds.join(joiner)}`;
-                }
+        // Create an array to store fetch promises
+        const fetchPromises = [];
 
-                if (actorIds.length) {
-                    url += `&with_cast=${actorIds.join(joiner)}`;
-                }
+        for (let page = 1; page <= totalPages; page++) {
+            // ATTENTION: To fully unleash the power of the API, you would need to choose video=true and adult=true haha
+            let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&sort_by=vote_average.desc&vote_count.gte=100&include_adult=false&include_video=false&page=${page}`;
 
-                url += `&vote_average.gte=${minRating}`;
+            if (genreIds.length) {
+                url += `&with_genres=${genreIds.join(joiner)}`;
+            }
 
-                // Fetch the movies
-                return fetch(url, signal).then((response) => response.json());
-            })
-            .then((data) => data.results.slice(0, numMovies));
+            if (actorIds.length) {
+                url += `&with_cast=${actorIds.join(joiner)}`;
+            }
+
+            url += `&vote_average.gte=${minRating}`;
+
+            // Add fetch promise to the array
+            fetchPromises.push(
+                fetch(url, signal).then((response) => response.json())
+            );
+        }
+
+        const results = await Promise.all(fetchPromises);
+
+        const allResults = results.flatMap((data) => data.results);
+        return allResults.slice(0, numMovies);
     }
-
 }
 
-export {
-    getTopRatedMovies,
-    MovieQueryBuilder,
-    genresMap
-};
+export { getTopRatedMovies, MovieQueryBuilder, genresMap };

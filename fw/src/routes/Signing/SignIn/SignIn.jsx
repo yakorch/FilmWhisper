@@ -1,4 +1,4 @@
-import ErrorText from "../../utilities/ErrorText";
+import ErrorText from "../../../utilities/ErrorText";
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -14,9 +14,11 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../AuthContext';
 import {CircularProgress} from "@mui/material";
 import * as Realm from "realm-web";
+import signInStyles from "./SignInStyles";
+
 
 function checkEmail(value) {
     try{
@@ -140,24 +142,20 @@ export default function SignIn() {
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline/>
-            <Box
-                sx={{
-                    marginTop: 8,
-                    marginBottom: 15,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    height: "100%"
-                }}
-            >
-                <Avatar sx={{m: 1, bgcolor: 'primary.main'}}>
-                    <LockOutlinedIcon/>
+            <CssBaseline />
+            <Box sx={signInStyles.container}>
+                <Avatar sx={signInStyles.avatar}>
+                    <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                    sx={signInStyles.form}
+                >
                     <TextField
                         error={fieldsErrors.emailError}
                         margin="normal"
@@ -183,7 +181,7 @@ export default function SignIn() {
                         helperText={helperTexts.passwordHelper}
                     />
                     <FormControlLabel
-                        control={<Checkbox value="remember" color="primary"/>}
+                        control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
                     />
                     {error ? <ErrorText message={errorMessage}/> : <></>}
@@ -192,18 +190,26 @@ export default function SignIn() {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{mt: 3, mb: 2}}
+                        sx={signInStyles.submitButton}
                     >
                         Sign In
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
+                            <Link
+                                to="sign-up"
+                                variant="body2"
+                                onClick={() => navigate("/sign-up")}
+                            >
                                 Forgot password?
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link to="sign-up" variant="body2" onClick={() => navigate("/sign-up")}>
+                            <Link
+                                to="sign-up"
+                                variant="body2"
+                                onClick={() => navigate("/sign-up")}
+                            >
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
