@@ -97,11 +97,13 @@ export function HomeFilterContainer() {
             setAllFetchedMovies(movies);
             setRecommendedMovies(movies.slice(0, MOVIES_PER_PAGE));
             setTotalPages(Math.ceil(movies.length / MOVIES_PER_PAGE));
+            setIsFetching(false);
         }).catch(() => {
             setRecommendedMovies([]);
+            setIsFetching(false);
         });
 
-        setIsFetching(false);
+
     };
 
     const executeQueryButton = () => {
