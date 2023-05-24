@@ -48,7 +48,7 @@ export function UserAccount() {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                justifyContent: 'center',
                 height: '100vh',
                 padding: '20px',
             }}
