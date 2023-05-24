@@ -133,4 +133,21 @@ class MovieQueryBuilder {
     }
 }
 
-export { getTopRatedMovies, MovieQueryBuilder, genresMap };
+function fetchMoviesByIds(ids) {
+    if (ids.length === 0) {
+        return Promise.resolve([]);
+    }
+
+    const promises = ids.map(id => {
+        const url = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`;
+        return fetch(url).then(response => response.json());
+    });
+
+    return Promise.all(promises).catch(error => {
+        console.error("Error fetching movies: ", error);
+        return [];
+    });
+}
+
+
+export { getTopRatedMovies, MovieQueryBuilder, genresMap, fetchMoviesByIds };
