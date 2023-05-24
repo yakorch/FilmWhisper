@@ -7,6 +7,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -46,6 +47,15 @@ const descriptionBoxStyle = { display: "flex", justifyContent: "space-between", 
 
 const MovieCard = ({ movie }) => {
     const theme = useTheme();
+    const matches = useMediaQuery(theme => theme.breakpoints.down("sm"));
+
+    const innerBoxStyle = {
+        display: "flex",
+        flexDirection: matches ? "column" : "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    };
+
 
     const imageURL = "https://image.tmdb.org/t/p/w500";
     const {
@@ -123,13 +133,7 @@ const MovieCard = ({ movie }) => {
                 <DialogTitle variant="h4">{title}</DialogTitle>
                 <DialogContent sx={{ overflowY: "auto" }}>
                     <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center"
-                        }}
-                    >
+                        sx={innerBoxStyle}>
                         <Box sx={{ flex: "1 1 0", marginRight: "16px" }}>
                             <CardMedia
                                 component="img"

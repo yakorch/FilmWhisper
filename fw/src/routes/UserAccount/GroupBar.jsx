@@ -14,8 +14,7 @@ export const GroupBar = () => {
 
     const handleTabChange = (_event, newValue) => {
         setSelectedTab(newValue);
-        alert("Spawning film cards...");
-        // Spawn film cards...
+        // TODO: Spawn film cards...
     };
 
     return (

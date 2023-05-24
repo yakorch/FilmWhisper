@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, LinearProgress, Typography } from "@mui/material";
 import { MovieQueryBuilder } from "../../TMDBAPI";
-import { useTheme } from "@mui/material/styles";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -9,16 +8,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MovieRecommendationSection } from "./MovieRecommendationSection";
 import { MainMovieFilters } from "./MovieFilters/MainMovieFilters";
 import { MovieRatingChoice } from "./MovieFilters/MovieRatingChoice";
-
-
-//TODO: make the links changed when the filter is changed for better UX
+import { useSearchParams } from "react-router-dom";
 
 
 const MOVIES_PER_PAGE = 10;
 const MOVIES_PER_QUERY = 100;
 
 export function HomeFilterContainer() {
-    const theme = useTheme();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [initialRender, setInitialRender] = useState(true);
 
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -44,6 +41,18 @@ export function HomeFilterContainer() {
     const [allFetchedMovies, setAllFetchedMovies] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
+
+    useEffect(() => {
+        const rating = searchParams.get("movieRating");
+        const genres = searchParams.get("selectedGenres")?.split(",");
+        const actors = searchParams.get("selectedActors")?.split(",");
+        const intersection = searchParams.get("toIntersectOptions");
+
+        if (rating) setMovieRating(+rating);
+        if (genres) setSelectedGenres(genres);
+        if (actors) setSelectedActors(actors);
+        if (intersection) setToIntersectOptions(intersection === "true");
+    }, []);
 
 
     let abortController = null;
@@ -88,11 +97,12 @@ export function HomeFilterContainer() {
             setAllFetchedMovies(movies);
             setRecommendedMovies(movies.slice(0, MOVIES_PER_PAGE));
             setTotalPages(Math.ceil(movies.length / MOVIES_PER_PAGE));
-        }).catch((e) => {
+            setIsFetching(false);
+        }).catch(() => {
             setRecommendedMovies([]);
+            setIsFetching(false);
         });
 
-        setIsFetching(false);
 
     };
 
@@ -104,6 +114,13 @@ export function HomeFilterContainer() {
         const { signal } = abortController;
 
         executeQuery(prepareQueryFunction(signal));
+
+        setSearchParams({
+            movieRating: movieRating || 7,
+            selectedGenres: selectedGenres.join(",") || [],
+            selectedActors: selectedActors.join(",") || [],
+            toIntersectOptions: String(toIntersectOptions)
+        });
     };
 
     const handlePageChange = (event, value) => {
@@ -132,6 +149,7 @@ export function HomeFilterContainer() {
         handleAccordionOpen();
     }, [isGenreFilterVisible]);
 
+
     return (<>
 
         <Container>
@@ -140,7 +158,7 @@ export function HomeFilterContainer() {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{ backgroundColor: "#f5f5f5", marginTop: "3vh" }}>
+                    sx={{ backgroundColor: "#f5f5f5", marginTop: "3vh"}}>
                     <Typography>Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
