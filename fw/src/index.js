@@ -13,6 +13,7 @@ import SignUp from "./routes/Signing/SignUp/SignUp";
 import { AuthProvider } from "./routes/Signing/AuthContext";
 import LogOut from "./routes/Signing/LogOut/LogOut";
 import { HomeFilterContainer } from "./routes/FilterSection/HomeFilterContainer";
+import { UserIDProvider } from "./routes/Signing/UserContext";
 
 const router = createBrowserRouter([
     {
@@ -53,7 +54,9 @@ root.render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
             <AuthProvider>
-                <RouterProvider router={router} />
+                <UserIDProvider>
+                    <RouterProvider router={router} />
+                </UserIDProvider>
             </AuthProvider>
         </ThemeProvider>
     </React.StrictMode>

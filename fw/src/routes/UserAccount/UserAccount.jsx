@@ -9,9 +9,19 @@ import {FormControlLabel} from "@mui/material";
 import {Switch} from "@mui/material";
 import MovieCard from '../FilterSection/RecommendedMovies/MovieCard';
 import {GroupBar} from "./GroupBar";
-
+import { useUserID } from "../Signing/UserContext";
+import getUserInfo from "../../utilities/getUserInfo";
 
 export function UserAccount() {
+    const {userID, setUserID} = useUserID();
+
+
+    console.log("User account: ", userID);
+    const userInfo = getUserInfo(userID);
+    // TODO: fetch info about user from the database
+
+    console.log("User info Mongo: ", userInfo);
+
     const user = {
         photo: 'userPhoto.png',
         firstName: 'Jim',
