@@ -14,6 +14,7 @@ import { AuthProvider } from "./routes/Signing/AuthContext";
 import LogOut from "./routes/Signing/LogOut/LogOut";
 import { HomeFilterContainer } from "./routes/FilterSection/HomeFilterContainer";
 import { UserIDProvider } from "./routes/Signing/UserContext";
+import { UserInfoProvider } from "./routes/Signing/UserInfoContext";
 
 const router = createBrowserRouter([
     {
@@ -55,7 +56,9 @@ root.render(
         <ThemeProvider theme={theme}>
             <AuthProvider>
                 <UserIDProvider>
-                    <RouterProvider router={router} />
+                    <UserInfoProvider>
+                        <RouterProvider router={router} />
+                    </UserInfoProvider>
                 </UserIDProvider>
             </AuthProvider>
         </ThemeProvider>

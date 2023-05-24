@@ -20,6 +20,7 @@ import * as Realm from "realm-web";
 import signInStyles from "./SignInStyles";
 import getUserInfo from "../../../utilities/getUserInfo";
 import { useUserID } from "../UserContext";
+import { useUserInfo } from "../UserInfoContext";
 
 
 function checkEmail(value) {
@@ -94,6 +95,7 @@ export default function SignIn() {
     const { setIsAuthenticated } = useAuth();
 
     const { setUserID } = useUserID();
+    const { setUserInfo } = useUserInfo();
 
     const handleSubmit = async (event) => {
 
@@ -134,6 +136,7 @@ export default function SignIn() {
         if (status) {
             setIsAuthenticated(true);
             setUserID(userId);
+            setUserInfo(getUserInfo(userId)[1] || {});
             navigate("/user-account");
         }
         setError(true);

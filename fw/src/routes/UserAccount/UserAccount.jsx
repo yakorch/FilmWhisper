@@ -6,17 +6,11 @@ import Paper from "@mui/material/Paper";
 import { FormControlLabel, Switch, TextField } from "@mui/material";
 import MovieCard from "../FilterSection/RecommendedMovies/MovieCard";
 import { GroupBar } from "./GroupBar";
-import { useUserID } from "../Signing/UserContext";
 import getUserInfo from "../../utilities/getUserInfo";
+import { useUserInfo } from "../Signing/UserInfoContext";
 
 export function UserAccount() {
-    const { userID, setUserID } = useUserID();
-
-
-    const dBResponse = getUserInfo(userID);
-    const userInfo = dBResponse[1] || {};
-    //const [isSuccess, userInfo, message] = dBResponse;
-
+    const { userInfo, setUserInfo } = useUserInfo();
     // TODO: fetch info about user from the database
 
     const [favIDs, watchedIDs, toWatchIDs]  = [userInfo.favourites, userInfo.watched, userInfo.toWatch];

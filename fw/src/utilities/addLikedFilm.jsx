@@ -1,6 +1,6 @@
 import * as Realm from "realm-web";
 
-async function addLikedFilm(userId, filmId) {
+export async function addLikedFilm(userId, filmId) {
     try {
         const app = new Realm.App({ id: "application-0-xzfrv" });
 
@@ -20,7 +20,6 @@ async function addLikedFilm(userId, filmId) {
 
         if (result.modifiedCount > 0) {
             // Update successful
-            console.log("Film added to the array.");
             return [true, result, "Success!"];
         } else {
             // No document matched the query or the film already exists in the array

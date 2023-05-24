@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Card, CardContent, CardMedia, Chip, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { genresMap } from "../../../TMDBAPI";
 import Box from "@mui/material/Box";
@@ -14,6 +14,11 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useUserInfo } from "../../Signing/UserInfoContext";
+import { useUserID } from "../../Signing/UserContext";
+import { addLikedFilm } from "../../../utilities/addLikedFilm";
+import { deleteLikedFilm } from "../../../utilities/deleteLikedFilm";
+import { useAuth } from "../../Signing/AuthContext";
 
 const movieIDToGenreName = {};
 // reverse the genresMap
@@ -47,6 +52,12 @@ const descriptionBoxStyle = { display: "flex", justifyContent: "space-between", 
 
 const MovieCard = ({ movie }) => {
     const theme = useTheme();
+
+    const { isAuthenticated } = useAuth();
+    const { userID } = useUserID();
+
+    const { userInfo, setUserInfo } = useUserInfo();
+
     const matches = useMediaQuery(theme => theme.breakpoints.down("sm"));
 
     const innerBoxStyle = {
@@ -76,7 +87,16 @@ const MovieCard = ({ movie }) => {
     } = movie;
 
     const [isLiked, setIsLiked] = useState(false);
+
+    if (isAuthenticated && userInfo.favourites) {
+        setIsLiked(userInfo.favourites.includes(id));
+    }
+
     const [isInList, setIsInList] = useState(false);
+    if (isAuthenticated && userInfo.toWatch) {
+        setIsInList(userInfo.toWatch.includes(id));
+    }
+
     const handleLikeDislike = () => setIsLiked(!isLiked);
     const handleAddRemoveFromList = () => setIsInList(!isInList);
 
@@ -103,6 +123,19 @@ const MovieCard = ({ movie }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const openDialog = () => setDialogOpen(true);
     const closeDialog = () => setDialogOpen(false);
+
+    useEffect(() => {
+        return () => {
+            if (isAuthenticated) {
+                if (isLiked) {
+                    addLikedFilm(userID, id);
+                } else {
+                    deleteLikedFilm(userID, id);
+                }
+            }
+        };
+    }, []);
+
 
     return (
         <>

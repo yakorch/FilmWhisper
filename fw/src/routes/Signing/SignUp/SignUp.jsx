@@ -18,6 +18,8 @@ import ErrorText from "../../../utilities/ErrorText";
 import * as Realm from "realm-web";
 import { CircularProgress } from "@mui/material";
 import { useUserID } from "../UserContext";
+import { useUserInfo } from "../UserInfoContext";
+import getUserInfo from "../../../utilities/getUserInfo";
 
 const {
     BSON: { ObjectId }
@@ -128,6 +130,7 @@ export default function SignUp() {
     const navigate = useNavigate();
     const { setIsAuthenticated } = useAuth();
     const { setUserID } = useUserID();
+    const { setUserInfo } = useUserInfo();
 
     const handleSubmit = async (event) => {
 
@@ -186,6 +189,8 @@ export default function SignUp() {
         if (status) {
             setIsAuthenticated(true);
             setUserID(userId);
+            setUserInfo(await getUserInfo(userId)[1] || {});
+
             navigate("/user-account");
             return;
         }

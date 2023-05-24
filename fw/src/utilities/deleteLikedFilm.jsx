@@ -1,6 +1,6 @@
 import * as Realm from "realm-web";
 
-async function deleteLikedFilm(userId, filmId) {
+export async function deleteLikedFilm(userId, filmId) {
     try {
         const app = new Realm.App({ id: "application-0-xzfrv" });
 
@@ -20,7 +20,6 @@ async function deleteLikedFilm(userId, filmId) {
 
         if (result.modifiedCount > 0) {
             // Update successful
-            console.log("Value removed from the array.");
             return [true, result, "Success!"];
         } else {
             // No document matched the query or the value was not found in the array
