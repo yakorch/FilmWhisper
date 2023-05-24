@@ -99,7 +99,10 @@ async function register(userToRegister) {
         }
         // Insert the new document
         const result = await collection.insertOne(userToRegister);
-        return [true, result.insertedId, "All's OK!"];
+        if (result){
+            return [true, result.insertedId, "All's OK!"];
+        }
+        return [false, "-1", "Something went wrong!"];
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         return [false, "-1", "Something went wrong!"];
@@ -182,7 +185,7 @@ export default function SignUp() {
 
         if (status) {
             setIsAuthenticated(true);
-            setUserID(userId.toString());
+            setUserID(userId);
             navigate("/user-account");
             return;
         }

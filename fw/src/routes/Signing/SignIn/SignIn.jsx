@@ -133,7 +133,7 @@ export default function SignIn() {
 
         if (status) {
             setIsAuthenticated(true);
-            setUserID(userId.toString());
+            setUserID(userId);
             navigate("/user-account");
         }
         setError(true);
