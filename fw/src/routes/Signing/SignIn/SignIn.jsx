@@ -19,37 +19,34 @@ import {CircularProgress} from "@mui/material";
 import * as Realm from "realm-web";
 import signInStyles from "./SignInStyles";
 import getUserInfo from "../../../utilities/getUserInfo";
+import { useUserID } from "../UserContext";
 
 
 function checkEmail(value) {
-    try{
+    try {
         if (!value) {
-            return {emailHelper: "* Provide an email!", emailError: true};
+            return { emailHelper: "* Provide an email!", emailError: true };
+        } else if (!value.includes("@")) {
+            return { emailHelper: "* Provide a valid email!", emailError: true };
         }
-        else if (!value.includes('@')){
-            return {emailHelper: "* Provide a valid email!", emailError: true};
-        }
-        return {emailHelper: "", emailError: false};
-    }
-    catch (e) { // Wrong data type
+        return { emailHelper: "", emailError: false };
+    } catch (e) {
         console.log(e);
-        return {emailHelper: "Incorrect input!", emailError: true};
+        return { emailHelper: "Incorrect input!", emailError: true };
     }
 }
 
 function checkPassword(value) {
-    try{
+    try {
         if (!value) {
-            return {passwordHelper: "* Provide a password!", passwordError: true};
+            return { passwordHelper: "* Provide a password!", passwordError: true };
+        } else if (value.length < 8) {
+            return { passwordHelper: "* Password should be at least 8 letters long!", passwordError: true };
         }
-        else if (value.length < 8){
-            return {passwordHelper: "* Password should be at least 8 letters long!", passwordError: true};
-        }
-        return {passwordHelper: "", passwordError: false};
-    }
-    catch (e) { // Wrong data type
+        return { passwordHelper: "", passwordError: false };
+    } catch (e) { // Wrong data type
         console.log(e);
-        return {passwordHelper: "Incorrect input!", passwordError: true};
+        return { passwordHelper: "Incorrect input!", passwordError: true };
     }
 }
 
@@ -66,15 +63,13 @@ async function login(userInfo) {
         const collection = mongo.db("film_whisper_db").collection("users");
 
         // Check if user with such email exists
-        const check = await collection.find({email: userInfo.email});
-        if (!check || check.length < 1){
+        const check = await collection.find({ email: userInfo.email });
+        if (!check || check.length < 1) {
             return [false, "-1", "Wrong password or email!"];
         }
-        if (check[0].password === userInfo.password){
+        if (check[0].password === userInfo.password) {
             return [true, check[0]._id, "Success!"];
         }
-        console.log(getUserInfo(check[0]._id));
-
         return [false, "-1", "Wrong password or email!"];
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -97,24 +92,27 @@ export default function SignIn() {
     const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
     const { setIsAuthenticated } = useAuth();
+
+    const { setUserID } = useUserID();
+
     const handleSubmit = async (event) => {
 
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const email = data.get('email');
-        const password = data.get('password');
+        const email = data.get("email");
+        const password = data.get("password");
 
-        const {emailHelper, emailError} = checkEmail(email);
-        const {passwordHelper, passwordError} = checkPassword(password);
+        const { emailHelper, emailError } = checkEmail(email);
+        const { passwordHelper, passwordError } = checkPassword(password);
 
         const newFieldsErrors = {
             emailError: emailError,
             passwordError: passwordError
-        }
+        };
         const newHelperTexts = {
             emailHelper: emailHelper,
             passwordHelper: passwordHelper
-        }
+        };
         setFieldsErrors(newFieldsErrors);
         setHelperTexts(newHelperTexts);
 
@@ -127,16 +125,16 @@ export default function SignIn() {
 
         const userInfo = {
             password: password,
-            email: email,
+            email: email
         };
         const [status, userId, errorMessageLocal] = await login(userInfo);
-        console.log(userId)
 
         setLoading(false);
 
         if (status) {
             setIsAuthenticated(true);
-            navigate('/user-account');
+            setUserID(userId.toString());
+            navigate("/user-account");
         }
         setError(true);
         setErrorMessage(errorMessageLocal);
@@ -186,7 +184,7 @@ export default function SignIn() {
                         control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
                     />
-                    {error ? <ErrorText message={errorMessage}/> : <></>}
+                    {error && <ErrorText message={errorMessage} />}
                     {loading && <CircularProgress />}
                     <Button
                         type="submit"
