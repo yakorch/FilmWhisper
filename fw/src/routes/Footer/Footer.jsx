@@ -12,7 +12,7 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
+        width: "90%",
         borderTop: '2px solid #6cd793',
     },
     grow: {
