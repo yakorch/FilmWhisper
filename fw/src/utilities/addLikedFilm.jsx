@@ -12,6 +12,7 @@ export async function addLikedFilm(userId, filmId) {
         const mongo = app.currentUser.mongoClient("mongodb-atlas");
         const collection = mongo.db("film_whisper_db").collection("users");
 
+
         // Update the document to add the film to the array
         const result = await collection.updateOne(
             { _id: userId },
